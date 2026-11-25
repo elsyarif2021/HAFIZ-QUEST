@@ -20,8 +20,8 @@
     if (!dialog.open || !start.disabled) return;
     audio.pause();
     start.disabled = false;
-    start.textContent = "Coba Putar Lagi";
-    status.textContent = "Bacaan belum bisa diputar. Coba lagi atau pilih Lewati.";
+    start.textContent = tr("Coba Putar Lagi");
+    status.textContent = tr("Bacaan belum bisa diputar. Coba lagi atau pilih Lewati.");
     firstPhrase.classList.remove("is-current");
     secondPhrase.classList.remove("is-current");
     start.focus();
@@ -30,7 +30,7 @@
   async function playOpening() {
     if (!dialog.open || start.disabled) return;
     start.disabled = true;
-    status.textContent = "Memutar bacaan Mishary Alafasy…";
+    status.textContent = tr("Memutar bacaan Mishary Alafasy…");
     skip.focus();
     if (audio.error) audio.load();
     audio.currentTime = 0;
@@ -44,7 +44,7 @@
       }
       if (!dialog.open) return;
       start.disabled = false;
-      status.textContent = "Ketuk Mulai dengan Bacaan untuk menyalakan suara.";
+      status.textContent = tr("Ketuk Mulai dengan Bacaan untuk menyalakan suara.");
       start.focus();
     }
   }

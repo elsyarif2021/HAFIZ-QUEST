@@ -60,7 +60,8 @@ const gameAudio = (() => {
     if (appSuspended || !narrationOn || tilawahPlaying || document.hidden) return;
     narrator.pause();
     background.pause();
-    narrator.src = `assets/audio/${clips[result]}.mp3`;
+    const folder = interfaceLanguage === "id" ? "" : interfaceLanguage + "/";
+    narrator.src = `assets/audio/${folder}${clips[result]}.mp3`;
     narrator.play().catch(updateMusic);
   }
 

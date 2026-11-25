@@ -304,11 +304,11 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     }
     .audio-menu-panel button:hover { background: #edf5ef; }
     .audio-menu-panel button::after {
-      content: "Mati";
+      content: attr(data-label-off);
       color: #4e6156;
       font-size: .68rem;
     }
-    .audio-menu-panel button[aria-pressed="true"]::after { content: "Aktif"; color: #08734e; }
+    .audio-menu-panel button[aria-pressed="true"]::after { content: attr(data-label-on); color: #08734e; }
   </style>
   <style>
     .mode-grid > .surah-quiz-entry {
@@ -440,6 +440,33 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     .about-features dt { color: #15382f; font-weight: 800; }
     .about-features dd { margin-top: .25rem; color: #475569; line-height: 1.55; }
   </style>
+  <style>
+    .language-select {
+      min-height: 40px;
+      margin-inline-start: .55rem;
+      padding: .35rem .65rem;
+      border: 1px solid #dbc78c;
+      border-radius: .7rem;
+      background: #fffaf0;
+      color: #15382f;
+      font-size: .82rem;
+      font-weight: 700;
+    }
+    .opening-card .language-select { margin-inline-start: 0; }
+    html[dir="rtl"] body { font-family: system-ui, Tahoma, sans-serif; }
+    html[dir="rtl"] .hero-art { left: 8%; right: auto; }
+    html[dir="rtl"] .hero { background: radial-gradient(ellipse at 20% 45%, #226456, transparent 58%), #103b32; }
+    html[dir="rtl"] .about-link { margin-left: 0; margin-right: .65rem; }
+    html[dir="rtl"] .audio-menu-panel { right: auto; left: -2rem; }
+    html[dir="rtl"] .mode-grid > button,
+    html[dir="rtl"] .meaning-options button,
+    html[dir="rtl"] .level-card { text-align: start; }
+    html[dir="rtl"] #answer-zone p:not(.quran-text),
+    html[dir="rtl"] #answer-zone .word-chip:not(.quran-text) { direction: rtl; }
+    @media (max-width: 600px) {
+      html[dir="rtl"] .hero-art { left: -11%; right: auto; }
+    }
+  </style>
 </head>
 <body class="pb-24">
 
@@ -509,6 +536,11 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
             Lanjut Level <span id="btn-next-lvl">01</span> <span aria-hidden="true">→</span>
           </button>
           <a href="#tentang-hafiz-quest" class="about-link">Tentang Aplikasi</a>
+          <select class="language-select" data-language-select data-no-i18n aria-label="Bahasa antarmuka">
+            <option value="id" lang="id">Indonesia</option>
+            <option value="en" lang="en">English</option>
+            <option value="ar" lang="ar" dir="rtl">العربية</option>
+          </select>
         </div>
 
         <!-- Progress Bar Juz 30 -->
@@ -702,7 +734,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         <p id="meaning-feedback" class="text-sm font-semibold" role="status"></p>
         <button id="meaning-next" onclick="nextSurahQuizQuestion()" class="hidden btn-emerald rounded-xl px-4 py-3 text-sm font-bold">Soal Berikutnya →</button>
       </div>
-      <p id="verse-quiz-source" class="hidden text-xs text-slate-600">Terjemahan bahasa Indonesia dari <a href="https://api.alquran.cloud/v1/juz/30/id.indonesian" class="underline" rel="noopener" target="_blank">Al Quran Cloud</a></p>
+      <p id="verse-quiz-source" class="hidden text-xs text-slate-600"><span id="verse-quiz-edition">Terjemahan bahasa Indonesia dari</span> <a href="https://api.alquran.cloud/v1/juz/30/id.indonesian" class="underline" rel="noopener" target="_blank">Al Quran Cloud</a></p>
       <p id="surah-quiz-source" class="text-xs text-slate-600">Sumber arti nama surah <a href="https://equran.id/" class="underline" rel="noopener" target="_blank">EQuran</a></p>
     </section>
 
@@ -1013,6 +1045,11 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         <p class="text-xs font-bold text-[#efd38d]">Basmalah</p>
         <p class="quran-text" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
       </div>
+      <select class="language-select" data-language-select data-no-i18n aria-label="Bahasa antarmuka">
+            <option value="id" lang="id">Indonesia</option>
+            <option value="en" lang="en">English</option>
+            <option value="ar" lang="ar" dir="rtl">العربية</option>
+          </select>
       <p id="opening-status" class="text-xs" role="status"></p>
       <div class="flex flex-wrap items-center justify-center gap-2">
         <button id="opening-play" class="btn-gold rounded-xl px-5 py-3 text-sm font-extrabold" type="button" autofocus>Mulai dengan Bacaan</button>
@@ -1029,9 +1066,12 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     </div>
   </dialog>
 
-  <script src="assets/game-audio.js"></script>
-  <script src="assets/opening.js?v=2"></script>
+  <script src="assets/ui-messages.js"></script>
+  <script src="assets/interface-language.js"></script>
+  <script src="assets/game-audio.js?v=3"></script>
+  <script src="assets/opening.js?v=3"></script>
   <script src="assets/juz30-translation.js"></script>
+  <script src="assets/juz30-localized.js"></script>
   <script>
     /* =========================================================================
        01. METADATA 37 LEVEL JUZ 30 (AN-NAS -> AN-NABA, TOTAL 564 AYAT)
@@ -1077,11 +1117,11 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     ];
 
     const STAGE_NAMES = {
-      1: "Tahap 1: Taman Hafalan",
-      2: "Tahap 2: Desa Cahaya",
-      3: "Tahap 3: Lembah Ilmu",
-      4: "Tahap 4: Pegunungan Hikmah",
-      5: "Tahap 5: Istana Ilmu"
+      1: tr("Tahap 1: Taman Hafalan"),
+      2: tr("Tahap 2: Desa Cahaya"),
+      3: tr("Tahap 3: Lembah Ilmu"),
+      4: tr("Tahap 4: Pegunungan Hikmah"),
+      5: tr("Tahap 5: Istana Ilmu")
     };
 
     /* =========================================================================
@@ -1152,7 +1192,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       gameAudio.setTilawah(false);
       document.getElementById("btn-audio").setAttribute("aria-pressed", "false");
       document.getElementById("verse-audio-label").textContent =
-        currentMode === "duel_1v1" ? "Putar Ulang Ayat Pemantik" : "Dengarkan Ayat";
+        currentMode === "duel_1v1" ? tr("Putar Ulang Ayat Pemantik") : tr("Dengarkan Ayat");
     }
 
     const closedDialog = document.getElementById("app-closed");
@@ -1190,10 +1230,10 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     }
 
     function applyProfileUI() {
-      document.getElementById("header-santri-name").textContent = santriProfile.name;
-      document.getElementById("report-santri-name").textContent = santriProfile.name;
-      document.getElementById("report-halaqah").textContent = santriProfile.halaqah;
-      document.getElementById("report-ustadz").textContent = santriProfile.ustadz;
+      document.getElementById("header-santri-name").textContent = santriProfile.name === "Santri Tahfiz" ? tr("Santri Tahfiz") : santriProfile.name;
+      document.getElementById("report-santri-name").textContent = santriProfile.name === "Santri Tahfiz" ? tr("Santri Tahfiz") : santriProfile.name;
+      document.getElementById("report-halaqah").textContent = santriProfile.halaqah === "Juz Amma" ? tr("Juz Amma") : santriProfile.halaqah;
+      document.getElementById("report-ustadz").textContent = santriProfile.ustadz === "Ustadz/Ustadzah" ? tr("Ustadz/Ustadzah") : santriProfile.ustadz;
     }
 
     let dialogTrigger;
@@ -1233,13 +1273,13 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       localStorage.setItem("hq_profile", JSON.stringify(santriProfile));
       applyProfileUI();
       closeProfileModal();
-      showBanner("✅ Identitas santri & pembimbing tersimpan.");
+      showBanner(tr("✅ Identitas santri & pembimbing tersimpan."));
     }
 
     function updateTopStats() {
       document.getElementById("header-xp").textContent = `${userXP} XP`;
       const doneCount = completedSurahs.length;
-      document.getElementById("juz-progress-label").textContent = `${doneCount} / 37 Surah Selesai`;
+      document.getElementById("juz-progress-label").textContent = tr`${doneCount} / 37 Surah Selesai`;
       const pct = Math.round((doneCount / 37) * 100);
       document.getElementById("juz-progress-bar").style.width = `${pct}%`;
       document.getElementById("btn-next-lvl").textContent = String(activeLevelNum).padStart(2, "0");
@@ -1256,20 +1296,20 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     function updateDailyQuestUI() {
       refreshDailyState();
       const count = Math.min(3, dailyState.count);
-      document.getElementById("daily-quest-badge").textContent = `${count} / 3 Ayat`;
+      document.getElementById("daily-quest-badge").textContent = tr`${count} / 3 Ayat`;
       const btn = document.getElementById("btn-claim-daily");
 
       if (dailyState.claimed) {
         btn.disabled = true;
-        btn.textContent = "✓ Sudah Diklaim";
+        btn.textContent = tr("✓ Sudah Diklaim");
         btn.className = "px-4 py-2 rounded-xl bg-emerald-100 text-emerald-800 font-bold text-xs shrink-0";
       } else if (dailyState.count >= 3) {
         btn.disabled = false;
-        btn.textContent = "🎁 Klaim +30 XP";
+        btn.textContent = tr("🎁 Klaim +30 XP");
         btn.className = "btn-gold px-4 py-2 rounded-xl font-extrabold text-xs shrink-0 cursor-pointer";
       } else {
         btn.disabled = true;
-        btn.textContent = "Belum Selesai";
+        btn.textContent = tr("Belum Selesai");
         btn.className = "px-4 py-2 rounded-xl bg-slate-100 text-slate-400 font-bold text-xs shrink-0 cursor-not-allowed";
       }
     }
@@ -1284,7 +1324,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       updateTopStats();
       updateDailyQuestUI();
       renderTeacherDashboard();
-      showBanner("🎁 Barakallah! Bonus Murajaah Harian +30 XP berhasil diklaim.");
+      showBanner(tr("🎁 Barakallah! Bonus Murajaah Harian +30 XP berhasil diklaim."));
     }
 
     function selectStage(stageNum, btn) {
@@ -1314,11 +1354,9 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
         card.innerHTML = `
           <div class="flex items-center gap-3.5">
-            <div class="w-11 h-11 rounded-2xl flex items-center justify-center font-extrabold text-sm ${
-              isDone
+            <div class="w-11 h-11 rounded-2xl flex items-center justify-center font-extrabold text-sm ${isDone
                 ? "bg-[#087F5B] text-white"
-                : "bg-[#DDF5E7] text-[#064E3B] border border-[#B7D7C0]"
-            }">
+                : "bg-[#DDF5E7] text-[#064E3B] border border-[#B7D7C0]"}">
               ${isDone ? "✓" : String(lvl.level).padStart(2, "0")}
             </div>
             <div>
@@ -1326,7 +1364,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
                 <h4 class="font-extrabold text-sm text-[#064E3B]">${lvl.name}</h4>
 
               </div>
-              <p class="text-[11px] text-slate-500 mt-0.5">${lvl.verses} Ayat • 5 Pilihan Misi</p>
+              <p class="text-[11px] text-slate-500 mt-0.5">${tr`${lvl.verses} Ayat • 5 Pilihan Misi`}</p>
             </div>
           </div>
 
@@ -1348,9 +1386,9 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
 
       document.getElementById("modal-lvl-stage").textContent = STAGE_NAMES[lvl.stage];
-      document.getElementById("modal-lvl-name").textContent = `Level ${String(lvl.level).padStart(2, "0")}: ${lvl.name}`;
+      document.getElementById("modal-lvl-name").textContent = tr`Level ${String(lvl.level).padStart(2, "0")}: ${lvl.name}`;
       document.getElementById("modal-lvl-arab").textContent = `سُورَةُ ${lvl.arab}`;
-      document.getElementById("modal-lvl-meta").textContent = `${lvl.verses} Ayat • 5 Pilihan Misi`;
+      document.getElementById("modal-lvl-meta").textContent = tr`${lvl.verses} Ayat • 5 Pilihan Misi`;
 
       const modal = document.getElementById("level-modal");
       showDialog(modal, modal.querySelector("button"));
@@ -1409,7 +1447,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       duelTurn = 1;
       document.getElementById("duel-p1-score").textContent = "0";
       document.getElementById("duel-p2-score").textContent = "0";
-      document.getElementById("duel-turn-label").textContent = "Giliran Pemain 1";
+      document.getElementById("duel-turn-label").textContent = tr("Giliran Pemain 1");
       startQuickMode("duel_1v1", surahId, 0);
     }
 
@@ -1430,7 +1468,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       document.getElementById("game-loading").classList.add("hidden");
 
       if (!data) {
-        showBanner("⚠️ Status data belum siap (memerlukan koneksi internet untuk sinkronisasi awal surah ini).");
+        showBanner(tr("⚠️ Status data belum siap (memerlukan koneksi internet untuk sinkronisasi awal surah ini)."));
         exitGame();
         return;
       }
@@ -1461,7 +1499,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       document.querySelector('[onclick="useHint()"]').disabled = competitive;
       document.getElementById("btn-audio").disabled = currentMode === "ujian_akhir";
       document.querySelector('[onclick="resetCurrentPuzzle()"]').disabled = false;
-      document.getElementById("btn-next-verse").textContent = "Lanjut →";
+      document.getElementById("btn-next-verse").textContent = tr("Lanjut →");
       const verses = activeVersesList;
       const surahInfo = JUZ30_LEVELS.find(l => l.surah_id === currentSurahId);
       const feedbackBox = document.getElementById("feedback-box");
@@ -1481,10 +1519,10 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
       if (currentMode === "susun_kata") {
         const v = verses[currentVerseIdx];
-        document.getElementById("game-mode-badge").textContent = "MODE 1: PUZZLE SUSUN AYAT";
-        document.getElementById("game-surah-title").textContent = `Surah ${surahInfo.name} • Ayat ${v.verse_number}`;
-        document.getElementById("puzzle-step-indicator").textContent = `Ayat ${currentVerseIdx + 1} dari ${verses.length}`;
-        document.getElementById("puzzle-instruction").innerHTML = `Ketuk kartu kata di bawah untuk menyusun ayat dari <strong>kanan ke kiri</strong>:`;
+        document.getElementById("game-mode-badge").textContent = tr("MODE 1: PUZZLE SUSUN AYAT");
+        document.getElementById("game-surah-title").textContent = tr`Surah ${surahInfo.name} • Ayat ${v.verse_number}`;
+        document.getElementById("puzzle-step-indicator").textContent = tr`Ayat ${currentVerseIdx + 1} dari ${verses.length}`;
+        document.getElementById("puzzle-instruction").innerHTML = tr`Ketuk kartu kata di bawah untuk menyusun ayat dari <strong>kanan ke kiri</strong>:`;
 
         expectedSequence = v.tokens.map((tok, idx) => ({ id: `tok_${idx}`, text: tok }));
         poolSequence = shuffleArray(expectedSequence);
@@ -1497,20 +1535,20 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         const startIdx = Math.floor(currentVerseIdx / groupSize) * groupSize;
         const chunk = verses.slice(startIdx, startIdx + groupSize);
 
-        document.getElementById("game-mode-badge").textContent = "MODE 2: PUZZLE URUTKAN AYAT";
-        document.getElementById("game-surah-title").textContent = `Surah ${surahInfo.name} • Ayat ${chunk[0].verse_number}–${chunk[chunk.length - 1].verse_number}`;
-        document.getElementById("puzzle-step-indicator").textContent = `Kelompok Ayat ${chunk[0].verse_number}–${chunk[chunk.length - 1].verse_number}`;
-        document.getElementById("puzzle-instruction").innerHTML = `Nomor ayat disembunyikan. Ketuk kartu ayat secara berurutan dari <strong>awal hingga akhir</strong>:`;
+        document.getElementById("game-mode-badge").textContent = tr("MODE 2: PUZZLE URUTKAN AYAT");
+        document.getElementById("game-surah-title").textContent = tr`Surah ${surahInfo.name} • Ayat ${chunk[0].verse_number}–${chunk[chunk.length - 1].verse_number}`;
+        document.getElementById("puzzle-step-indicator").textContent = tr`Kelompok Ayat ${chunk[0].verse_number}–${chunk[chunk.length - 1].verse_number}`;
+        document.getElementById("puzzle-instruction").innerHTML = tr`Nomor ayat disembunyikan. Ketuk kartu ayat secara berurutan dari <strong>awal hingga akhir</strong>:`;
 
         expectedSequence = chunk.map((v, idx) => ({ id: `v_${startIdx + idx}`, text: v.text, fullWidth: true }));
         poolSequence = shuffleArray(expectedSequence);
       }
       else if (currentMode === "ayat_hilang") {
         const v = verses[currentVerseIdx];
-        document.getElementById("game-mode-badge").textContent = "MODE 3: LENGKAPI AYAT HILANG";
-        document.getElementById("game-surah-title").textContent = `Surah ${surahInfo.name} • Ayat ${v.verse_number}`;
-        document.getElementById("puzzle-step-indicator").textContent = `Ayat ${currentVerseIdx + 1} dari ${verses.length}`;
-        document.getElementById("puzzle-instruction").innerHTML = `Pilih lafaz yang tepat untuk melengkapi bagian ayat yang kosong:`;
+        document.getElementById("game-mode-badge").textContent = tr("MODE 3: LENGKAPI AYAT HILANG");
+        document.getElementById("game-surah-title").textContent = tr`Surah ${surahInfo.name} • Ayat ${v.verse_number}`;
+        document.getElementById("puzzle-step-indicator").textContent = tr`Ayat ${currentVerseIdx + 1} dari ${verses.length}`;
+        document.getElementById("puzzle-instruction").innerHTML = tr`Pilih lafaz yang tepat untuk melengkapi bagian ayat yang kosong:`;
 
         const hideIdx = Math.min(v.tokens.length - 1, Math.max(0, v.tokens.length - 2));
         const missingTok = { id: `miss_${hideIdx}`, text: v.tokens[hideIdx] };
@@ -1535,13 +1573,13 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         const nextVerse = verses[idx + 1];
 
         document.getElementById("game-mode-badge").textContent = currentMode === "duel_1v1"
-          ? `MODE 7: DUEL 1V1 (GILIRAN PEMAIN ${duelTurn})`
-          : "MODE 4: SAMBUNG AYAT BERIKUTNYA";
-        document.getElementById("game-surah-title").textContent = `Surah ${surahInfo.name} • Lanjutan Ayat ${promptVerse.verse_number}`;
-        document.getElementById("puzzle-step-indicator").textContent = `Ronde ${idx + 1} dari ${currentMode === "duel_1v1" ? duelRoundCount() : verses.length - 1}`;
+          ? tr`MODE 7: DUEL 1V1 (GILIRAN PEMAIN ${duelTurn})`
+          : tr("MODE 4: SAMBUNG AYAT BERIKUTNYA");
+        document.getElementById("game-surah-title").textContent = tr`Surah ${surahInfo.name} • Lanjutan Ayat ${promptVerse.verse_number}`;
+        document.getElementById("puzzle-step-indicator").textContent = tr`Ronde ${idx + 1} dari ${currentMode === "duel_1v1" ? duelRoundCount() : verses.length - 1}`;
         document.getElementById("puzzle-instruction").innerHTML = currentMode === "duel_1v1"
-          ? `<strong>Pemain ${duelTurn}</strong>, dengarkan ayat pemantik, lalu pilih ayat lanjutannya untuk meraih 10 poin.`
-          : `Perhatikan ayat berikut, lalu pilih <strong>ayat lanjutannya</strong>:`;
+          ? `<strong>${tr`Pemain ${duelTurn}`}</strong>${tr`, dengarkan ayat pemantik, lalu pilih ayat lanjutannya untuk meraih 10 poin.`}`
+          : tr`Perhatikan ayat berikut, lalu pilih <strong>ayat lanjutannya</strong>:`;
 
         expectedSequence = [{ id: `next_${idx + 1}`, text: nextVerse.text, fullWidth: true }];
         const otherVerses = [...new Map(verses
@@ -1555,10 +1593,10 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       }
       else if (currentMode === "mutasyabihat") {
         const v = verses[currentVerseIdx];
-        document.getElementById("game-mode-badge").textContent = "MODE 5: TANTANGAN AYAT SERUPA (MUTASYABIHAT)";
-        document.getElementById("game-surah-title").textContent = `Surah ${surahInfo.name} • Ketelitian Ayat ${v.verse_number}`;
-        document.getElementById("puzzle-step-indicator").textContent = `Uji Ketelitian ${currentVerseIdx + 1}/${verses.length}`;
-        document.getElementById("puzzle-instruction").innerHTML = `Hati-hati ayat tertukar! Pilih lafaz <strong>Ayat ke-${v.verse_number} Surah ${surahInfo.name}</strong> yang persis benar:`;
+        document.getElementById("game-mode-badge").textContent = tr("MODE 5: TANTANGAN AYAT SERUPA (MUTASYABIHAT)");
+        document.getElementById("game-surah-title").textContent = tr`Surah ${surahInfo.name} • Ketelitian Ayat ${v.verse_number}`;
+        document.getElementById("puzzle-step-indicator").textContent = tr`Uji Ketelitian ${currentVerseIdx + 1}/${verses.length}`;
+        document.getElementById("puzzle-instruction").innerHTML = tr`Hati-hati ayat tertukar! Pilih lafaz <strong>Ayat ke-${v.verse_number} Surah ${surahInfo.name}</strong> yang persis benar:`;
 
         expectedSequence = [{ id: `mut_ok`, text: v.text, fullWidth: true }];
         const similarVerses = [...new Map(verses
@@ -1568,29 +1606,29 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
           .map((ov, i) => ({ id: `mut_err_${i}`, text: ov.text, fullWidth: true }));
 
         poolSequence = shuffleArray([...expectedSequence, ...similarVerses]);
-        answerZone.dataset.promptText = `Surah ${surahInfo.name} — Ayat ke-${v.verse_number}`;
+        answerZone.dataset.promptText = tr`Surah ${surahInfo.name} — Ayat ke-${v.verse_number}`;
       }
       else if (currentMode === "tebak_surah") {
         const v = verses[currentVerseIdx];
-        document.getElementById("game-mode-badge").textContent = "MODE 6: TEBAK NAMA SURAH";
-        document.getElementById("game-surah-title").textContent = `Identifikasi Surah & Ayat`;
-        document.getElementById("puzzle-step-indicator").textContent = `Soal ${currentVerseIdx + 1} dari ${verses.length}`;
-        document.getElementById("puzzle-instruction").innerHTML = `Potongan ayat berikut terdapat pada <strong>Surah apa</strong>?`;
+        document.getElementById("game-mode-badge").textContent = tr("MODE 6: TEBAK NAMA SURAH");
+        document.getElementById("game-surah-title").textContent = tr`Identifikasi Surah & Ayat`;
+        document.getElementById("puzzle-step-indicator").textContent = tr`Soal ${currentVerseIdx + 1} dari ${verses.length}`;
+        document.getElementById("puzzle-instruction").innerHTML = tr`Potongan ayat berikut terdapat pada <strong>Surah apa</strong>?`;
 
-        expectedSequence = [{ id: `surah_${surahInfo.surah_id}`, text: `Surah ${surahInfo.name} (${surahInfo.arab})`, isLatinOption: true }];
+        expectedSequence = [{ id: `surah_${surahInfo.surah_id}`, text: tr`Surah ${surahInfo.name} (${surahInfo.arab})`, isLatinOption: true }];
         const otherSurahs = shuffleArray(JUZ30_LEVELS.filter(l => l.surah_id !== surahInfo.surah_id))
           .slice(0, 3)
-          .map(os => ({ id: `surah_${os.surah_id}`, text: `Surah ${os.name} (${os.arab})`, isLatinOption: true }));
+          .map(os => ({ id: `surah_${os.surah_id}`, text: tr`Surah ${os.name} (${os.arab})`, isLatinOption: true }));
 
         poolSequence = shuffleArray([...expectedSequence, ...otherSurahs]);
         answerZone.dataset.promptText = v.text;
       }
       else if (currentMode === "ujian_akhir") {
         const v = verses[currentVerseIdx];
-        document.getElementById("game-mode-badge").textContent = "MODE 8: UJIAN AKHIR KOMPREHENSIF";
-        document.getElementById("game-surah-title").textContent = `Ujian Mutqin • Surah ${surahInfo.name}`;
-        document.getElementById("puzzle-step-indicator").textContent = `Butir Ujian ${currentVerseIdx + 1} dari ${verses.length}`;
-        document.getElementById("puzzle-instruction").innerHTML = `Susun kembali ayat ujian berikut dengan ketepatan penuh (kanan ke kiri):`;
+        document.getElementById("game-mode-badge").textContent = tr("MODE 8: UJIAN AKHIR KOMPREHENSIF");
+        document.getElementById("game-surah-title").textContent = tr`Ujian Mutqin • Surah ${surahInfo.name}`;
+        document.getElementById("puzzle-step-indicator").textContent = tr`Butir Ujian ${currentVerseIdx + 1} dari ${verses.length}`;
+        document.getElementById("puzzle-instruction").innerHTML = tr`Susun kembali ayat ujian berikut dengan ketepatan penuh (kanan ke kiri):`;
 
         expectedSequence = v.tokens.map((tok, idx) => ({ id: `exam_${idx}`, text: tok }));
         poolSequence = shuffleArray(expectedSequence);
@@ -1633,7 +1671,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         const promptDiv = document.createElement("div");
         promptDiv.className = "w-full text-center pb-3 mb-2 border-b border-[#D4AF37]/30";
         promptDiv.innerHTML = `
-          <span class="text-[10px] font-bold uppercase text-slate-400 block mb-1">Petunjuk Soal:</span>
+          <span class="text-[10px] font-bold uppercase text-slate-400 block mb-1">${tr`Petunjuk Soal:`}</span>
           <p class="${currentMode === 'mutasyabihat' ? 'font-bold text-sm text-[#064E3B]' : 'quran-text text-2xl md:text-3xl text-[#064E3B]'}">${answerZone.dataset.promptText}</p>
         `;
         answerZone.appendChild(promptDiv);
@@ -1641,7 +1679,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         if (placedSequence.length === 0) {
           const placeholder = document.createElement("p");
           placeholder.className = "text-xs text-slate-400 font-medium py-2";
-          placeholder.textContent = "Pilih jawaban yang tepat dari kartu di bawah...";
+          placeholder.textContent = tr("Pilih jawaban yang tepat dari kartu di bawah...");
           answerZone.appendChild(placeholder);
         } else {
           placedSequence.forEach((item, idx) => {
@@ -1655,8 +1693,8 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
           const placeholder = document.createElement("p");
           placeholder.className = "text-xs text-slate-400 font-medium";
           placeholder.textContent = currentMode === "urut_ayat"
-            ? "Ketuk kartu ayat di bawah untuk menyusun urutan..."
-            : "Susunan kata akan muncul di sini (kanan ke kiri)...";
+            ? tr("Ketuk kartu ayat di bawah untuk menyusun urutan...")
+            : tr("Susunan kata akan muncul di sini (kanan ke kiri)...");
           answerZone.appendChild(placeholder);
         } else {
           placedSequence.forEach((item, idx) => {
@@ -1712,7 +1750,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     function useHint() {
       if (puzzleLocked || ["ujian_akhir", "duel_1v1"].includes(currentMode)) return;
       if (!placedSequence.every((item, index) => item.text === expectedSequence[index]?.text)) {
-        showBanner("Hapus pilihan yang belum tepat sebelum memakai petunjuk.");
+        showBanner(tr("Hapus pilihan yang belum tepat sebelum memakai petunjuk."));
         return;
       }
       if (placedSequence.length >= expectedSequence.length) return;
@@ -1737,15 +1775,15 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       const button = document.getElementById("btn-audio");
       gameAudio.setTilawah(true);
       button.setAttribute("aria-pressed", "true");
-      document.getElementById("verse-audio-label").textContent = "Hentikan Bacaan";
+      document.getElementById("verse-audio-label").textContent = tr("Hentikan Bacaan");
       try {
         await recitation.play();
       } catch (error) {
         if (error.name !== "AbortError") {
           stopRecitation();
           showBanner(error.name === "NotAllowedError"
-            ? "Tekan tombol putar untuk mendengarkan ayat."
-            : "Audio tilawah gagal dimuat. Ayat masih bisa dibaca di layar.");
+            ? tr("Tekan tombol putar untuk mendengarkan ayat.")
+            : tr("Audio tilawah gagal dimuat. Ayat masih bisa dibaca di layar."));
         }
       }
     }
@@ -1753,7 +1791,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     function checkPuzzleAnswer() {
       if (puzzleLocked) return;
       if (placedSequence.length !== expectedSequence.length) {
-        showBanner("Lengkapi jawaban sebelum memeriksanya.");
+        showBanner(tr("Lengkapi jawaban sebelum memeriksanya."));
         return;
       }
       const feedbackBox = document.getElementById("feedback-box");
@@ -1773,7 +1811,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         document.getElementById("duel-p1-score").textContent = duelP1Score;
         document.getElementById("duel-p2-score").textContent = duelP2Score;
         feedbackBox.className = `mt-5 p-4 rounded-2xl border text-center ${isCorrect ? "bg-emerald-50 border-emerald-400" : "bg-amber-50 border-amber-400"}`;
-        feedbackTitle.textContent = isCorrect ? `Pemain ${duelTurn} benar · +10 poin` : `Jawaban Pemain ${duelTurn} belum tepat.`;
+        feedbackTitle.textContent = isCorrect ? tr`Pemain ${duelTurn} benar · +10 poin` : tr`Jawaban Pemain ${duelTurn} belum tepat.`;
         feedbackVerse.textContent = expectedSequence[0].text;
         lockPuzzle();
         return;
@@ -1800,7 +1838,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
         feedbackBox.className = "mt-5 p-4 rounded-2xl bg-[#DDF5E7] border border-[#087F5B] text-center";
         feedbackTitle.className = "font-extrabold text-sm text-[#064E3B]";
-        feedbackTitle.textContent = `MasyaAllah! Jawaban tepat (+${gainedXP} XP)`;
+        feedbackTitle.textContent = tr`MasyaAllah! Jawaban tepat (+${gainedXP} XP)`;
         feedbackVerse.textContent = currentMode === "urut_ayat" ? "" : activeVersesList[submittedVerseIdx].text;
         lockPuzzle();
       } else {
@@ -1825,7 +1863,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
         feedbackBox.className = "mt-5 p-4 rounded-2xl bg-amber-50 border border-amber-400 text-center";
         feedbackTitle.className = "font-extrabold text-sm text-amber-800";
-        feedbackTitle.textContent = "Belum tepat. Periksa kembali pilihanmu.";
+        feedbackTitle.textContent = tr("Belum tepat. Periksa kembali pilihanmu.");
         feedbackVerse.textContent = "";
       }
     }
@@ -1856,13 +1894,13 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
       if (currentMode === "duel_1v1") {
         if (nextIdx >= maxLimit) {
-          const result = duelP1Score === duelP2Score ? "Seri" : `Pemain ${duelP1Score > duelP2Score ? 1 : 2} menang`;
-          showBanner(`Duel selesai · ${result} (${duelP1Score}–${duelP2Score})`);
+          const result = duelP1Score === duelP2Score ? tr("Seri") : tr`Pemain ${duelP1Score > duelP2Score ? 1 : 2} menang`;
+          showBanner(tr`Duel selesai · ${result} (${duelP1Score}–${duelP2Score})`);
           exitGame();
           return;
         }
         duelTurn = duelTurn === 1 ? 2 : 1;
-        document.getElementById("duel-turn-label").textContent = `Giliran Pemain ${duelTurn}`;
+        document.getElementById("duel-turn-label").textContent = tr`Giliran Pemain ${duelTurn}`;
       }
 
       if (nextIdx < maxLimit) {
@@ -1877,7 +1915,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         userXP += 50;
         localStorage.setItem("hq_xp", userXP);
         updateTopStats();
-        showBanner("🎉 Alhamdulillah! Misi selesai (+50 XP Bonus).");
+        showBanner(tr("🎉 Alhamdulillah! Misi selesai (+50 XP Bonus)."));
         exitGame();
       }
     }
@@ -1891,20 +1929,20 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       JUZ30_LEVELS.forEach(info => {
         const opt = document.createElement("option");
         opt.value = info.surah_id;
-        opt.textContent = `Level ${String(info.level).padStart(2, "0")} — Surah ${info.name} (${info.verses} Ayat)`;
+        opt.textContent = tr`Level ${String(info.level).padStart(2, "0")} — Surah ${info.name} (${info.verses} Ayat)`;
         sel.appendChild(opt);
       });
     }
 
     function loadAndRenderMushaf(surahId) {
       const container = document.getElementById("mushaf-verses-container");
-      container.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">Memuat teks Uthmani terverifikasi...</p>`;
+      container.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">${tr`Memuat teks Uthmani terverifikasi...`}</p>`;
 
       const verses = quranCache[surahId];
       container.innerHTML = "";
 
       if (!verses) {
-        container.innerHTML = `<p class="text-xs text-amber-700 text-center py-6">Status data belum siap untuk surah ini (memerlukan koneksi internet untuk sinkronisasi awal).</p>`;
+        container.innerHTML = `<p class="text-xs text-amber-700 text-center py-6">${tr`Status data belum siap untuk surah ini (memerlukan koneksi internet untuk sinkronisasi awal).`}</p>`;
         return;
       }
 
@@ -1937,13 +1975,13 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       document.getElementById("stat-accuracy").textContent = `${acc}%`;
       document.getElementById("stat-attempts").textContent = totalAttempts;
       document.getElementById("stat-surahs").textContent = `${completedSurahs.length} / 37`;
-      document.getElementById("stat-weak-count").textContent = `${weakVerses.length} Ayat`;
+      document.getElementById("stat-weak-count").textContent = tr`${weakVerses.length} Ayat`;
 
       const badges = [
-        { icon: "🌱", name: "Langkah Awal", desc: "Kumpulkan 50 XP", unlocked: userXP >= 50 },
-        { icon: "📖", name: "Penjaga Al-Mu'awwidzat", desc: "Selesaikan An-Nas & Al-Falaq", unlocked: completedSurahs.includes(114) && completedSurahs.includes(113) },
-        { icon: "🏅", name: "Murajaah Istiqamah", desc: "Capai 150 XP", unlocked: userXP >= 150 },
-        { icon: "👑", name: "Hafiz Juz Amma", desc: "Selesaikan seluruh 37 Surah", unlocked: completedSurahs.length >= 37 }
+        { icon: "🌱", name: tr("Langkah Awal"), desc: tr("Kumpulkan 50 XP"), unlocked: userXP >= 50 },
+        { icon: "📖", name: tr("Penjaga Al-Mu'awwidzat"), desc: tr("Selesaikan An-Nas & Al-Falaq"), unlocked: completedSurahs.includes(114) && completedSurahs.includes(113) },
+        { icon: "🏅", name: tr("Murajaah Istiqamah"), desc: tr("Capai 150 XP"), unlocked: userXP >= 150 },
+        { icon: "👑", name: tr("Hafiz Juz Amma"), desc: tr("Selesaikan seluruh 37 Surah"), unlocked: completedSurahs.length >= 37 }
       ];
 
       const badgesGrid = document.getElementById("badges-grid");
@@ -1969,8 +2007,8 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       if (weakVerses.length === 0) {
         weakList.innerHTML = `
           <div class="p-4 rounded-2xl bg-[#DDF5E7]/40 border border-[#B7D7C0] text-center">
-            <p class="text-xs font-bold text-[#064E3B]">Alhamdulillah! Belum ada catatan ayat yang keliru.</p>
-            <p class="text-[11px] text-slate-500 mt-0.5">Terus pertahankan ketelitian murajaah Juz 30.</p>
+            <p class="text-xs font-bold text-[#064E3B]">${tr`Alhamdulillah! Belum ada catatan ayat yang keliru.`}</p>
+            <p class="text-[11px] text-slate-500 mt-0.5">${tr`Terus pertahankan ketelitian murajaah Juz 30.`}</p>
           </div>
         `;
         return;
@@ -1982,13 +2020,13 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         item.innerHTML = `
           <div>
             <div class="flex items-center gap-2">
-              <span class="text-xs font-extrabold text-[#064E3B]">Surah ${w.surah_name} • Ayat ${w.verse_number}</span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900">${w.mistakes}x Keliru</span>
+              <span class="text-xs font-extrabold text-[#064E3B]">${tr`Surah ${w.surah_name} • Ayat ${w.verse_number}`}</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900">${tr`${w.mistakes}x Keliru`}</span>
             </div>
             <p class="quran-text text-xl text-[#064E3B] mt-1 text-right sm:text-left">${w.text}</p>
           </div>
           <button onclick="startQuickMode('susun_kata', ${w.surah_id}, ${w.verse_idx})" class="btn-emerald px-3.5 py-2 rounded-xl font-bold text-xs shrink-0 cursor-pointer">
-            Latih Ulang →
+            ${tr`Latih Ulang →`}
           </button>
         `;
         weakList.appendChild(item);
@@ -1999,24 +2037,24 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       weakVerses = [];
       localStorage.setItem("hq_weak_verses", "[]");
       renderTeacherDashboard();
-      showBanner("ℹ️ Catatan evaluasi ayat berhasil direset.");
+      showBanner(tr("ℹ️ Catatan evaluasi ayat berhasil direset."));
     }
 
     function exportTeacherReport() {
       const acc = totalAttempts === 0 ? 0 : Math.round((totalCorrect / totalAttempts) * 100);
-      let report = `LAPORAN EVALUASI TAHFIZ — Hafiz Quest (JUZ 30)\n`;
-      report += `Nama Santri: ${santriProfile.name}\n`;
-      report += `Halaqah/Kelas: ${santriProfile.halaqah}\n`;
-      report += `Pembimbing: ${santriProfile.ustadz}\n`;
-      report += `Tanggal: ${new Date().toLocaleDateString("id-ID")}\n`;
-      report += `Total XP: ${userXP} XP | Akurasi: ${acc}% (${totalCorrect}/${totalAttempts} soal)\n`;
-      report += `Surah Selesai: ${completedSurahs.length} / 37 Surah\n\n`;
-      report += `Ayat Perlu Murajaah Tambahan:\n`;
+      let report = tr`LAPORAN EVALUASI TAHFIZ — Hafiz Quest (JUZ 30)\n`;
+      report += tr`Nama Santri: ${santriProfile.name}\n`;
+      report += tr`Halaqah/Kelas: ${santriProfile.halaqah}\n`;
+      report += tr`Pembimbing: ${santriProfile.ustadz}\n`;
+      report += tr`Tanggal: ${new Date().toLocaleDateString(interfaceLanguage)}\n`;
+      report += tr`Total XP: ${userXP} XP | Akurasi: ${acc}% (${totalCorrect}/${totalAttempts} soal)\n`;
+      report += tr`Surah Selesai: ${completedSurahs.length} / 37 Surah\n\n`;
+      report += tr`Ayat Perlu Murajaah Tambahan:\n`;
       if (weakVerses.length === 0) {
-        report += `- Belum ada catatan kesalahan\n`;
+        report += tr`- Belum ada catatan kesalahan\n`;
       } else {
         weakVerses.forEach(w => {
-          report += `- Surah ${w.surah_name} Ayat ${w.verse_number} (${w.mistakes}x keliru)\n`;
+          report += tr`- Surah ${w.surah_name} Ayat ${w.verse_number} (${w.mistakes}x keliru)\n`;
         });
       }
 
@@ -2029,10 +2067,10 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       document.body.removeChild(tempInput);
 
       if (!copied) {
-        showBanner("Rapor gagal disalin. Coba dari peramban lain.");
+        showBanner(tr("Rapor gagal disalin. Coba dari peramban lain."));
         return;
       }
-      showBanner("📋 Rapor evaluasi santri berhasil disalin! Siap ditempel ke WhatsApp/laporan guru.");
+      showBanner(tr("📋 Rapor evaluasi santri berhasil disalin! Siap ditempel ke WhatsApp/laporan guru."));
     }
 
     // Indonesian surah names and meanings from https://equran.id/api/v2/surat.
@@ -2078,29 +2116,35 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     const juz30VerseQuestions = JUZ30_LEVELS.flatMap(surah =>
       quranCache[surah.surah_id].map(verse => ({ ...surah, verse }))
     );
+    const useArabicTafsir = interfaceLanguage === "ar";
+    const displayTranslations = localizedJuz30[interfaceLanguage] ?? juz30Translation;
     const surahQuizModes = {
       meaning: {
-        title: "Cocokkan Nama Surah",
-        question: "Apa arti nama surah di atas?",
-        answer: surah => surahMeanings[surah.surah_id],
-        explanation: (surah, answer) => `Arti ${surah.name} adalah ${answer}.`,
-        summary: (score, total) => `Kamu mencocokkan ${score} dari ${total} nama surah dengan tepat.`
+        title: tr("Cocokkan Nama Surah"),
+        question: tr("Apa arti nama surah di atas?"),
+        answer: surah => tr(surahMeanings[surah.surah_id]),
+        explanation: (surah, answer) => tr`Arti ${surah.name} adalah ${answer}.`,
+        summary: (score, total) => tr`Kamu mencocokkan ${score} dari ${total} nama surah dengan tepat.`
       },
       count: {
-        title: "Tebak Jumlah Ayat",
-        question: "Berapa jumlah ayat dalam surah di atas?",
-        answer: surah => `${surah.verses} ayat`,
-        explanation: (surah, answer) => `Surah ${surah.name} memiliki ${answer}.`,
-        summary: (score, total) => `Kamu menjawab ${score} dari ${total} soal jumlah ayat dengan tepat.`
+        title: tr("Tebak Jumlah Ayat"),
+        question: tr("Berapa jumlah ayat dalam surah di atas?"),
+        answer: surah => tr`${surah.verses} ayat`,
+        explanation: (surah, answer) => tr`Surah ${surah.name} memiliki ${answer}.`,
+        summary: (score, total) => tr`Kamu menjawab ${score} dari ${total} soal jumlah ayat dengan tepat.`
       },
       translation: {
-        title: "Tebak Arti Ayat",
-        question: "Terjemahan mana yang sesuai dengan ayat di atas?",
+        title: tr("Tebak Arti Ayat"),
+        question: useArabicTafsir ? tr("Penjelasan mana yang sesuai dengan ayat di atas?") : tr("Terjemahan mana yang sesuai dengan ayat di atas?"),
         items: juz30VerseQuestions,
         sessionSize: 10,
-        answer: item => juz30Translation[item.verse.audioNumber],
-        explanation: (item, answer) => `Terjemahan ${item.name} ayat ${item.verse.verse_number} adalah “${answer}”`,
-        summary: (score, total) => `Kamu menjawab ${score} dari ${total} soal terjemahan ayat dengan tepat.`
+        answer: item => displayTranslations[item.verse.audioNumber],
+        explanation: (item, answer) => useArabicTafsir
+          ? tr`Penjelasan ${item.name} ayat ${item.verse.verse_number} adalah “${answer}”`
+          : tr`Terjemahan ${item.name} ayat ${item.verse.verse_number} adalah “${answer}”`,
+        summary: (score, total) => useArabicTafsir
+          ? tr`Kamu menjawab ${score} dari ${total} soal tafsir ayat dengan tepat.`
+          : tr`Kamu menjawab ${score} dari ${total} soal terjemahan ayat dengan tepat.`
       }
     };
     let surahQuizMode = "meaning";
@@ -2119,6 +2163,13 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       const isTranslation = mode === "translation";
       document.getElementById("verse-quiz-source").classList.toggle("hidden", !isTranslation);
       document.getElementById("view-meanings").classList.toggle("verse-quiz", isTranslation);
+      const edition = {
+        id: ["Terjemahan bahasa Indonesia dari", "id.indonesian"],
+        en: ["Terjemahan Inggris (Sahih International) dari", "en.sahih"],
+        ar: ["Tafsir Al-Muyassar dari", "ar.muyassar"]
+      }[interfaceLanguage];
+      document.getElementById("verse-quiz-edition").textContent = tr(edition[0]);
+      document.querySelector("#verse-quiz-source a").href = "https://api.alquran.cloud/v1/juz/30/" + edition[1];
       const items = quiz.items ?? JUZ30_LEVELS;
       surahQuizDeck = shuffleArray(items).slice(0, quiz.sessionSize ?? items.length);
       surahQuizIndex = 0;
@@ -2135,11 +2186,11 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       const alternatives = [...new Set(candidates)].filter(text => text !== answer);
       const options = shuffleArray([answer, ...shuffleArray(alternatives).slice(0, 3)]);
       document.getElementById("meaning-question").classList.remove("hidden");
-      document.getElementById("meaning-progress").textContent = `Soal ${surahQuizIndex + 1} dari ${surahQuizDeck.length}`;
-      document.getElementById("meaning-score").textContent = `${surahQuizScore} benar`;
+      document.getElementById("meaning-progress").textContent = tr`Soal ${surahQuizIndex + 1} dari ${surahQuizDeck.length}`;
+      document.getElementById("meaning-score").textContent = tr`${surahQuizScore} benar`;
       document.getElementById("meaning-arabic").textContent = surah.verse?.text ?? surah.arab;
       const name = document.getElementById("meaning-name");
-      name.textContent = surah.verse ? `${surah.name} · Ayat ${surah.verse.verse_number}` : surah.name;
+      name.textContent = surah.verse ? tr`${surah.name} · Ayat ${surah.verse.verse_number}` : surah.name;
       name.classList.toggle("text-sm", Boolean(surah.verse));
       name.classList.toggle("text-2xl", !surah.verse);
       document.getElementById("meaning-feedback").textContent = "";
@@ -2162,17 +2213,17 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       surahQuizAnswered = true;
       const correct = button.textContent === answer;
       if (correct) surahQuizScore++;
-      document.getElementById("meaning-score").textContent = `${surahQuizScore} benar`;
+      document.getElementById("meaning-score").textContent = tr`${surahQuizScore} benar`;
       document.querySelectorAll("#meaning-options button").forEach(option => {
         option.disabled = true;
         if (option.textContent === answer) option.dataset.result = "right";
         else if (option === button) option.dataset.result = "wrong";
       });
       document.getElementById("meaning-feedback").textContent =
-        `${correct ? "MasyaAllah, tepat!" : "Belum tepat."} ${surahQuizModes[surahQuizMode].explanation(surah, answer)}`;
+        `${correct ? tr("MasyaAllah, tepat!") : tr("Belum tepat.")} ${surahQuizModes[surahQuizMode].explanation(surah, answer)}`;
       gameAudio.narrate(correct ? "correct" : "duelMiss");
       const next = document.getElementById("meaning-next");
-      next.textContent = surahQuizIndex + 1 === surahQuizDeck.length ? "Lihat Hasil →" : "Soal Berikutnya →";
+      next.textContent = surahQuizIndex + 1 === surahQuizDeck.length ? tr("Lihat Hasil →") : tr("Soal Berikutnya →");
       next.classList.remove("hidden");
       next.focus();
     }
@@ -2191,8 +2242,8 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       }
       document.getElementById("meaning-question").classList.add("hidden");
       document.getElementById("meaning-feedback").textContent =
-        `Latihan selesai. ${surahQuizModes[surahQuizMode].summary(surahQuizScore, surahQuizDeck.length)}`;
-      document.getElementById("meaning-next").textContent = "Main Lagi";
+        tr`Latihan selesai. ${surahQuizModes[surahQuizMode].summary(surahQuizScore, surahQuizDeck.length)}`;
+      document.getElementById("meaning-next").textContent = tr("Main Lagi");
       document.getElementById("meaning-title").focus();
     }
 

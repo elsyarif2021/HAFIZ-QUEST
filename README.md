@@ -1,8 +1,12 @@
 # Hafiz Quest
 
-Game latihan tahfiz Juz 30 dalam bahasa Indonesia. Tersedia 37 surah, 564 ayat, sebelas mode latihan, duel dua pemain pada satu perangkat, mushaf, dan rapor evaluasi santri.
+Game latihan tahfiz Juz 30 dalam bahasa Indonesia, Inggris, dan Arab. Tersedia 37 surah, 564 ayat, sebelas mode latihan, duel dua pemain pada satu perangkat, mushaf, dan rapor evaluasi santri.
 
 Dikembangkan oleh **Ustadz Liyas Syarifudin, S.Pd.I., M.Pd**
+
+## Bahasa
+
+Pilih **Indonesia**, **English**, atau **العربية** di layar pembuka atau dasbor. Pilihan tersimpan di browser dan tersedia sebagai tautan langsung melalui `?lang=id`, `?lang=en`, atau `?lang=ar`. Antarmuka Arab menggunakan tata letak kanan-ke-kiri. Narator mengikuti bahasa pilihan, sedangkan bacaan Al-Qur’an tetap berbahasa Arab.
 
 ## Cocokkan Nama Surah
 
@@ -14,7 +18,11 @@ Lihat nama surah dalam tulisan Arab dan Latin, lalu pilih jumlah ayatnya. Satu s
 
 ## Tebak Arti Ayat
 
-Pilih terjemahan bahasa Indonesia dari empat pilihan. Setiap sesi memuat 10 soal acak dari 564 ayat Juz 30. Terjemahan berasal dari edisi [id.indonesian, Al Quran Cloud](https://api.alquran.cloud/v1/juz/30/id.indonesian).
+Pilih satu dari empat jawaban. Setiap sesi memuat 10 soal acak dari 564 ayat Juz 30. Sumber untuk tiap bahasa tersedia di Al Quran Cloud.
+
+- Indonesia: [edisi id.indonesian](https://api.alquran.cloud/v1/juz/30/id.indonesian).
+- Inggris: [Sahih International](https://api.alquran.cloud/v1/juz/30/en.sahih).
+- Arab: [Tafsir Al-Muyassar](https://api.alquran.cloud/v1/juz/30/ar.muyassar).
 
 ## Pembuka
 
