@@ -487,6 +487,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       font-weight: 700;
     }
     .recite-button[aria-pressed="true"] { background: #c4edda; }
+    #btn-audio:disabled, #quiz-verse-audio:disabled { opacity: .65; cursor: not-allowed; }
     .verse-row-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
     .mark-review-button { background: #fff9ea; border-color: #ead7a6; }
   </style>
@@ -1158,7 +1159,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     </div>
   </dialog>
 
-  <script src="assets/ui-messages.js?v=4"></script>
+  <script src="assets/ui-messages.js?v=5"></script>
   <script src="assets/interface-language.js?v=2"></script>
   <script src="assets/install.js"></script>
   <script src="assets/game-audio.js?v=3"></script>
@@ -1650,10 +1651,8 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       const competitive = ["ujian_akhir", "duel_1v1"].includes(currentMode);
       document.querySelector('[onclick="useHint()"]').disabled = competitive;
       const audioButton = document.getElementById("btn-audio");
-      audioButton.disabled = currentMode === "ujian_akhir";
-      audioButton.dataset.playLabel = currentMode === "duel_1v1"
-        ? tr("Putar Ulang Ayat Pemantik") : tr("Dengarkan Ayat");
-      document.getElementById("verse-audio-label").textContent = audioButton.dataset.playLabel;
+      const hasDuelPrompt = currentMode === "duel_1v1";
+      setAnswerAudio(audioButton, hasDuelPrompt, hasDuelPrompt ? tr("Putar Ulang Ayat Pemantik") : tr("Dengarkan Ayat"));
       document.querySelector('[onclick="resetCurrentPuzzle()"]').disabled = false;
       document.getElementById("btn-next-verse").textContent = tr("Lanjut →");
       const verses = activeVersesList;
@@ -1923,19 +1922,26 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       }
     }
 
+    function setAnswerAudio(button, enabled, playLabel = tr("Dengarkan Ayat")) {
+      button.disabled = !enabled;
+      button.dataset.playLabel = playLabel;
+      button.querySelector("[data-recitation-label]").textContent = enabled
+        ? playLabel : tr("Murottal tersedia setelah jawaban benar");
+    }
+
     function playVerseAudio() {
       const button = document.getElementById("btn-audio");
       if (button.disabled) return;
-      if (!puzzleLocked && currentMode !== "duel_1v1") puzzleAssisted = true;
-      const verses = currentMode === "urut_ayat"
-        ? activeVersesList.slice(currentVerseIdx, currentVerseIdx + 6)
-        : activeVersesList.slice(currentVerseIdx, currentVerseIdx + 1);
-      toggleRecitation(button, verses);
+      const isContinuation = ["sambung_ayat", "duel_1v1"].includes(currentMode);
+      const verseIdx = puzzleLocked && isContinuation ? currentVerseIdx + 1 : currentVerseIdx;
+      const count = currentMode === "urut_ayat" ? 6 : 1;
+      toggleRecitation(button, activeVersesList.slice(verseIdx, verseIdx + count));
     }
 
     function playQuizVerseAudio() {
+      const button = document.getElementById("quiz-verse-audio");
       const verse = surahQuizDeck[surahQuizIndex]?.verse;
-      if (verse) toggleRecitation(document.getElementById("quiz-verse-audio"), [verse]);
+      if (!button.disabled && verse) toggleRecitation(button, [verse]);
     }
 
     function checkPuzzleAnswer() {
@@ -1963,7 +1969,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         feedbackBox.className = `mt-5 p-4 rounded-2xl border text-center ${isCorrect ? "bg-emerald-50 border-emerald-400" : "bg-amber-50 border-amber-400"}`;
         feedbackTitle.textContent = isCorrect ? tr`Pemain ${duelTurn} benar · +10 poin` : tr`Jawaban Pemain ${duelTurn} belum tepat.`;
         feedbackVerse.textContent = expectedSequence[0].text;
-        lockPuzzle();
+        lockPuzzle(isCorrect);
         return;
       }
 
@@ -1981,10 +1987,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
           updateReviewVerses(currentSurahId, affected, isCorrect ? "correct" : "mistake");
         }
       }
-      if (!isCorrect) {
-        puzzleAssisted = true;
-        if (currentMode === "ujian_akhir") document.getElementById("btn-audio").disabled = false;
-      }
+      if (!isCorrect) puzzleAssisted = true;
 
       if (isCorrect) {
         totalCorrect++;
@@ -2004,7 +2007,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         feedbackTitle.className = "font-extrabold text-sm text-[#064E3B]";
         feedbackTitle.textContent = tr`MasyaAllah! Jawaban tepat (+${gainedXP} XP)`;
         feedbackVerse.textContent = currentMode === "urut_ayat" ? "" : activeVersesList[submittedVerseIdx].text;
-        lockPuzzle();
+        lockPuzzle(isCorrect);
       } else {
         feedbackBox.className = "mt-5 p-4 rounded-2xl bg-amber-50 border border-amber-400 text-center";
         feedbackTitle.className = "font-extrabold text-sm text-amber-800";
@@ -2013,9 +2016,9 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       }
     }
 
-    function lockPuzzle() {
+    function lockPuzzle(correct) {
       puzzleLocked = true;
-      document.getElementById("btn-audio").disabled = false;
+      setAnswerAudio(document.getElementById("btn-audio"), correct);
       document.querySelectorAll("#answer-zone button, #pool-zone button, [onclick='useHint()'], [onclick='resetCurrentPuzzle()']").forEach(button => {
         button.disabled = true;
       });
@@ -2475,7 +2478,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       document.getElementById("meaning-score").textContent = tr`${surahQuizScore} benar`;
       document.getElementById("meaning-arabic").textContent = surah.verse?.text ?? surah.arab;
       const quizAudio = document.getElementById("quiz-verse-audio");
-      quizAudio.dataset.playLabel = tr("Dengarkan Ayat");
+      setAnswerAudio(quizAudio, false);
       quizAudio.classList.toggle("hidden", !surah.verse);
       const name = document.getElementById("meaning-name");
       name.textContent = surah.verse ? tr`${surah.name} · Ayat ${surah.verse.verse_number}` : surah.name;
@@ -2510,6 +2513,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       document.getElementById("meaning-feedback").textContent =
         `${correct ? tr("MasyaAllah, tepat!") : tr("Belum tepat.")} ${surahQuizModes[surahQuizMode].explanation(surah, answer)}`;
       stopRecitation();
+      setAnswerAudio(document.getElementById("quiz-verse-audio"), correct && Boolean(surah.verse));
       gameAudio.narrate(correct ? "correct" : "duelMiss");
       const next = document.getElementById("meaning-next");
       next.textContent = surahQuizIndex + 1 === surahQuizDeck.length ? tr("Lihat Hasil →") : tr("Soal Berikutnya →");

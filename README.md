@@ -26,7 +26,7 @@ Pilih satu dari empat jawaban. Setiap sesi memuat 10 soal acak dari 564 ayat Juz
 
 ## Murottal dan Murajaah Pintar
 
-Mushaf menyediakan tombol murottal Mishary Alafasy untuk setiap ayat dan tombol untuk menandai ayat yang lupa. Audio tersedia juga di puzzle yang memakai ayat, termasuk kuis arti ayat. Ujian membuka audio sesudah jawaban diperiksa. Audio untuk sebagian besar ayat membutuhkan internet.
+Mushaf menyediakan tombol murottal Mishary Alafasy untuk setiap ayat dan tombol untuk menandai ayat yang lupa. Murottal jawaban di puzzle, termasuk ujian dan kuis arti ayat, tersedia setelah jawaban benar. Dalam Duel, bacaan ayat pemantik tetap merupakan bagian dari soal. Audio untuk sebagian besar ayat membutuhkan internet.
 
 Kesalahan latihan hafalan dan penanda di Mushaf masuk ke daftar Evaluasi yang sama. Satu sesi **Murajaah Pintar** berisi hingga lima ayat yang sudah waktunya diulang. Jawaban benar pada percobaan pertama, tanpa audio atau petunjuk, menjadwalkan pengulangan setelah 1, 3, lalu 7 hari. Kesalahan membuat ayat siap diulang kembali. Catatan tersimpan di browser dan diperbarui antartab pada situs yang sama.
 

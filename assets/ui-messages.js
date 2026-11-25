@@ -334,7 +334,8 @@ const interfaceMessages = {
     "Tutup": "Close",
     "Pilih dari 37 surah Juz 30": "Choose from all 37 surahs in Juz 30",
     "Pilih Misi": "Choose a Mission",
-    "Ganti Surah": "Change Surah"
+    "Ganti Surah": "Change Surah",
+    "Murottal tersedia setelah jawaban benar": "Recitation unlocks after a correct answer"
   },
   "ar": {
     "+30 XP": "+30 XP",
@@ -670,6 +671,7 @@ const interfaceMessages = {
     "Tutup": "إغلاق",
     "Pilih dari 37 surah Juz 30": "اختر من سور جزء عمّ الـ٣٧",
     "Pilih Misi": "اختر مهمة",
-    "Ganti Surah": "غيّر السورة"
+    "Ganti Surah": "غيّر السورة",
+    "Murottal tersedia setelah jawaban benar": "تتاح التلاوة بعد الإجابة الصحيحة"
   }
 };
