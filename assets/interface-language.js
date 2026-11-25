@@ -1,3 +1,12 @@
+// This fragment is consumed after a language selection. Shared language links open normally.
+const languageChangeFragment = "#language-changed";
+const skipOpeningForLanguageChange = location.hash === languageChangeFragment;
+if (skipOpeningForLanguageChange) {
+  const url = new URL(location.href);
+  url.hash = "";
+  history.replaceState(history.state, "", url);
+}
+
 const interfaceLanguage = (() => {
   const available = ["id", "en", "ar"];
   const requested = new URL(location.href).searchParams.get("lang");
@@ -52,7 +61,7 @@ function tr(source, ...values) {
     select.addEventListener("change", () => {
       const url = new URL(location.href);
       url.searchParams.set("lang", select.value);
-      url.hash = "";
+      url.hash = languageChangeFragment;
       location.replace(url);
     });
   });

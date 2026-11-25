@@ -1,4 +1,8 @@
 (() => {
+  if (skipOpeningForLanguageChange) {
+    document.querySelector("#view-home [data-language-select]").focus({ preventScroll: true });
+    return;
+  }
   const dialog = document.getElementById("opening");
   const start = document.getElementById("opening-play");
   const skip = document.getElementById("opening-skip");
