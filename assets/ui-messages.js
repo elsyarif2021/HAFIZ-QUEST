@@ -322,7 +322,16 @@ const interfaceMessages = {
     "Ulangi lagi: QQ0QQ": "Next review: QQ0QQ",
     "Belum ada ayat yang jatuh tempo untuk murajaah.": "No verses are due for review.",
     "Sesi Murajaah Pintar selesai. Lihat jadwal berikutnya di Evaluasi.": "Smart Review session complete. See your next review dates in Progress Report.",
-    "Ditandai untuk murajaah": "Marked for review"
+    "Ditandai untuk murajaah": "Marked for review",
+    "Instal Aplikasi": "Install App",
+    "Instal Hafiz Quest": "Install Hafiz Quest",
+    "Android / tablet Android": "Android phones and tablets",
+    "Buka dengan Chrome. Dari menu ⋮, pilih Tambahkan ke layar utama atau Instal aplikasi.": "Open in Chrome. From the ⋮ menu, choose Add to Home screen or Install app.",
+    "Buka dengan Safari. Ketuk Bagikan, lalu pilih Tambahkan ke Layar Utama.": "Open in Safari. Tap Share, then choose Add to Home Screen.",
+    "PC / laptop": "PC / laptop",
+    "Di Chrome atau Edge, gunakan ikon instal di bilah alamat atau menu browser. Di Safari pada Mac yang mendukungnya, pilih File lalu Tambahkan ke Dock.": "In Chrome or Edge, use the install icon in the address bar or the browser menu. On supported Macs, use Safari’s File > Add to Dock.",
+    "Jika menu instal tidak muncul, buka tautan di browser utama atau mainkan langsung di tab ini.": "If the install option is missing, open the link in your main browser or play right in this tab.",
+    "Tutup": "Close"
   },
   "ar": {
     "+30 XP": "+30 XP",
@@ -646,6 +655,15 @@ const interfaceMessages = {
     "Ulangi lagi: QQ0QQ": "المراجعة التالية: QQ0QQ",
     "Belum ada ayat yang jatuh tempo untuk murajaah.": "لا توجد آيات حان موعد مراجعتها.",
     "Sesi Murajaah Pintar selesai. Lihat jadwal berikutnya di Evaluasi.": "انتهت جلسة المراجعة الذكية. راجع مواعيد المراجعة التالية في صفحة التقييم.",
-    "Ditandai untuk murajaah": "معلَّمة للمراجعة"
+    "Ditandai untuk murajaah": "معلَّمة للمراجعة",
+    "Instal Aplikasi": "ثبّت التطبيق",
+    "Instal Hafiz Quest": "ثبّت Hafiz Quest",
+    "Android / tablet Android": "هواتف وأجهزة Android اللوحية",
+    "Buka dengan Chrome. Dari menu ⋮, pilih Tambahkan ke layar utama atau Instal aplikasi.": "افتح الموقع في Chrome. من قائمة ⋮ اختر إضافة إلى الشاشة الرئيسية أو تثبيت التطبيق.",
+    "Buka dengan Safari. Ketuk Bagikan, lalu pilih Tambahkan ke Layar Utama.": "افتح الموقع في Safari. اضغط على مشاركة، ثم اختر إضافة إلى الشاشة الرئيسية.",
+    "PC / laptop": "الكمبيوتر",
+    "Di Chrome atau Edge, gunakan ikon instal di bilah alamat atau menu browser. Di Safari pada Mac yang mendukungnya, pilih File lalu Tambahkan ke Dock.": "في Chrome أو Edge استخدم رمز التثبيت في شريط العناوين أو قائمة المتصفح. على أجهزة Mac المدعومة، اختر ملف ثم إضافة إلى Dock في Safari.",
+    "Jika menu instal tidak muncul, buka tautan di browser utama atau mainkan langsung di tab ini.": "إذا لم يظهر خيار التثبيت، افتح الرابط في المتصفح الرئيسي أو العب مباشرة في علامة التبويب هذه.",
+    "Tutup": "إغلاق"
   }
 };

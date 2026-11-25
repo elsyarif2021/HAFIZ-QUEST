@@ -2,6 +2,15 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
+  <meta name="theme-color" content="#103b32" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" href="/assets/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch.png" />
+  <meta property="og:title" content="Hafiz Quest — Juz 30" />
+  <meta property="og:description" content="Latihan hafalan, kuis, murottal, dan Murajaah Pintar. Coba langsung atau instal dari browser." />
+  <meta property="og:image" content="https://hafizquest.vercel.app/assets/hafiz-quest-poster.png" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="author" content="Ustadz Liyas Syarifudin, S.Pd.I., M.Pd" />
   <title>Hafiz Quest — Puzzle Al-Qur'an Juz 30</title>
@@ -481,6 +490,32 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     .verse-row-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
     .mark-review-button { background: #fff9ea; border-color: #ead7a6; }
   </style>
+  <style>
+    #install-app {
+      margin-inline-start: .55rem;
+      min-height: 44px;
+      padding: .55rem .9rem;
+      border: 1px solid #eac879;
+      border-radius: .75rem;
+      color: #fff5d9;
+      font-weight: 800;
+      font-size: .82rem;
+    }
+    #install-app:hover { background: #ffffff20; }
+    #install-guide[open] {
+      background: #faf9f4;
+      color: #15382f;
+      border: 1px solid #e5e8df;
+      border-radius: 1.2rem;
+      padding: clamp(1rem, 4vw, 1.7rem);
+      width: min(30rem, calc(100vw - 2rem));
+      max-height: calc(100dvh - 2rem);
+      overflow: auto;
+    }
+    #install-guide::backdrop { background: #0a2e27bd; }
+    #install-guide li { margin-top: .6rem; }
+    @media (display-mode: standalone) { #install-app { display: none; } }
+  </style>
 </head>
 <body class="pb-24">
 
@@ -549,6 +584,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
           <button onclick="openLevelModal(activeLevelNum)" class="btn-gold hero-cta rounded-xl font-extrabold text-sm cursor-pointer">
             Lanjut Level <span id="btn-next-lvl">01</span> <span aria-hidden="true">→</span>
           </button>
+          <button id="install-app" type="button">Instal Aplikasi</button>
           <a href="#tentang-hafiz-quest" class="about-link">Tentang Aplikasi</a>
           <select class="language-select" data-language-select data-no-i18n aria-label="Bahasa antarmuka">
             <option value="id" lang="id">Indonesia</option>
@@ -1055,6 +1091,17 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     </div>
   </nav>
 
+  <dialog id="install-guide" aria-labelledby="install-title">
+    <h2 id="install-title" class="section-title">Instal Hafiz Quest</h2>
+    <ul class="text-sm">
+      <li><strong>Android / tablet Android</strong><br>Buka dengan Chrome. Dari menu ⋮, pilih Tambahkan ke layar utama atau Instal aplikasi.</li>
+      <li><strong>iPhone / iPad</strong><br>Buka dengan Safari. Ketuk Bagikan, lalu pilih Tambahkan ke Layar Utama.</li>
+      <li><strong>PC / laptop</strong><br>Di Chrome atau Edge, gunakan ikon instal di bilah alamat atau menu browser. Di Safari pada Mac yang mendukungnya, pilih File lalu Tambahkan ke Dock.</li>
+    </ul>
+    <p class="text-xs text-slate-600 mt-4">Jika menu instal tidak muncul, buka tautan di browser utama atau mainkan langsung di tab ini.</p>
+    <form method="dialog" class="mt-4"><button class="btn-emerald px-4 py-3 rounded-xl text-sm font-bold">Tutup</button></form>
+  </dialog>
+
   <dialog id="opening" class="opening-dialog" aria-labelledby="opening-title">
     <div class="opening-card space-y-3">
       <p class="opening-emblem" aria-hidden="true">✦</p>
@@ -1090,8 +1137,9 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     </div>
   </dialog>
 
-  <script src="assets/ui-messages.js?v=2"></script>
+  <script src="assets/ui-messages.js?v=3"></script>
   <script src="assets/interface-language.js?v=2"></script>
+  <script src="assets/install.js"></script>
   <script src="assets/game-audio.js?v=3"></script>
   <script src="assets/opening.js?v=4"></script>
   <script src="assets/juz30-translation.js"></script>

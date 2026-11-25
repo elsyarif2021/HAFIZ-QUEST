@@ -34,6 +34,12 @@ Kesalahan latihan hafalan dan penanda di Mushaf masuk ke daftar Evaluasi yang sa
 
 Ta’awudz dan basmalah diputar saat aplikasi dibuka apabila browser mengizinkan suara otomatis. Jika browser meminta interaksi, tekan **Mulai dengan Bacaan**. Teks disorot mengikuti bacaan. Tombol **Lewati** membuka dasbor langsung. Rekaman Mishary Alafasy diambil dari bagian pembuka [Al-Fatihah, QuranicAudio](https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/001.mp3).
 
+## Instal di perangkat
+
+Buka [Hafiz Quest](https://hafizquest.vercel.app/) dan pilih **Instal Aplikasi**. Chrome dan Edge dapat menampilkan dialog pemasangan. Di Safari iPhone/iPad, ketuk **Bagikan → Tambahkan ke Layar Utama**. Safari di Mac yang mendukung aplikasi web menyediakan **File → Tambahkan ke Dock**.
+
+Setelah halaman dan cache selesai dimuat sekali, fitur inti dapat digunakan offline. Audio murottal dari CDN tetap memerlukan internet. Saat mengubah berkas yang di-cache atau versi URL aset, perbarui daftar dan nama cache pada `sw.js`.
+
 ## Menjalankan
 
 Buka `index.html` di browser dari folder repositori agar berkas audio juga dapat dimuat. Untuk menguji melalui server lokal, jalankan `python3 -m http.server 8000` dari folder repositori lalu buka `http://localhost:8000`.
