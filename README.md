@@ -2,7 +2,7 @@
 
 Game latihan tahfiz Juz 30 dalam bahasa Indonesia. Tersedia 37 surah, 564 ayat, sebelas mode latihan, duel dua pemain pada satu perangkat, mushaf, dan rapor evaluasi santri.
 
-Dikembangkan oleh **Liyas Syarifudin, S.Pd.I., M.Pd.**
+Dikembangkan oleh **Ustadz Liyas Syarifudin, S.Pd.I., M.Pd**
 
 ## Cocokkan Nama Surah
 
