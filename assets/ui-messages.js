@@ -331,7 +331,10 @@ const interfaceMessages = {
     "PC / laptop": "PC / laptop",
     "Di Chrome atau Edge, gunakan ikon instal di bilah alamat atau menu browser. Di Safari pada Mac yang mendukungnya, pilih File lalu Tambahkan ke Dock.": "In Chrome or Edge, use the install icon in the address bar or the browser menu. On supported Macs, use Safari’s File > Add to Dock.",
     "Jika menu instal tidak muncul, buka tautan di browser utama atau mainkan langsung di tab ini.": "If the install option is missing, open the link in your main browser or play right in this tab.",
-    "Tutup": "Close"
+    "Tutup": "Close",
+    "Pilih dari 37 surah Juz 30": "Choose from all 37 surahs in Juz 30",
+    "Pilih Misi": "Choose a Mission",
+    "Ganti Surah": "Change Surah"
   },
   "ar": {
     "+30 XP": "+30 XP",
@@ -664,6 +667,9 @@ const interfaceMessages = {
     "PC / laptop": "الكمبيوتر",
     "Di Chrome atau Edge, gunakan ikon instal di bilah alamat atau menu browser. Di Safari pada Mac yang mendukungnya, pilih File lalu Tambahkan ke Dock.": "في Chrome أو Edge استخدم رمز التثبيت في شريط العناوين أو قائمة المتصفح. على أجهزة Mac المدعومة، اختر ملف ثم إضافة إلى Dock في Safari.",
     "Jika menu instal tidak muncul, buka tautan di browser utama atau mainkan langsung di tab ini.": "إذا لم يظهر خيار التثبيت، افتح الرابط في المتصفح الرئيسي أو العب مباشرة في علامة التبويب هذه.",
-    "Tutup": "إغلاق"
+    "Tutup": "إغلاق",
+    "Pilih dari 37 surah Juz 30": "اختر من سور جزء عمّ الـ٣٧",
+    "Pilih Misi": "اختر مهمة",
+    "Ganti Surah": "غيّر السورة"
   }
 };

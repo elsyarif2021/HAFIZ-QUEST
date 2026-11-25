@@ -516,6 +516,11 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     #install-guide li { margin-top: .6rem; }
     @media (display-mode: standalone) { #install-app { display: none; } }
   </style>
+  <style>
+    .surah-picker { max-width: 100%; }
+    .arena-selectors { display: flex; flex-wrap: wrap; gap: .75rem; min-width: 0; }
+    .arena-selectors > div, .arena-selectors select { max-width: 100%; }
+  </style>
 </head>
 <body class="pb-24">
 
@@ -731,6 +736,14 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
           </button>
         </div>
 
+        <form onsubmit="openSelectedLevel(event)" class="clay-card p-4 mb-4 flex flex-wrap items-end gap-3">
+          <div class="min-w-0">
+            <label for="level-surah-select" class="block text-xs font-bold text-[#064E3B] mb-1">Pilih dari 37 surah Juz 30</label>
+            <select id="level-surah-select" class="surah-picker bg-white border border-[#D4AF37] text-[#064E3B] font-bold text-xs rounded-xl px-3 py-2 cursor-pointer"></select>
+          </div>
+          <button type="submit" class="btn-emerald rounded-xl px-4 py-2 text-xs font-bold">Pilih Misi</button>
+        </form>
+
         <!-- Grid Kartu Level -->
         <div id="levels-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <!-- Dirender via JS -->
@@ -811,17 +824,25 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
           <h2 id="game-surah-title" tabindex="-1" class="font-extrabold text-base text-[#064E3B] mt-0.5">Surah An-Nas • Ayat 1</h2>
         </div>
 
-        <!-- Selector Mode -->
-        <select id="in-game-mode-select" aria-label="Mode latihan" onchange="switchInGameMode(this.value)" class="bg-[#FFF8E7] border border-[#D4AF37] text-[#064E3B] font-bold text-xs rounded-xl px-3 py-2 focus:outline-none cursor-pointer">
-          <option value="susun_kata">🧩 Mode 1: Susun Ayat</option>
-          <option value="urut_ayat">📜 Mode 2: Urutkan Ayat</option>
-          <option value="ayat_hilang">✍️ Mode 3: Lengkapi Ayat</option>
-          <option value="sambung_ayat">🔗 Mode 4: Sambung Ayat</option>
-          <option value="mutasyabihat">🛡️ Mode 5: Ayat Serupa</option>
-          <option value="tebak_surah">🏷️ Mode 6: Tebak Surah</option>
-          <option value="duel_1v1">⚔️ Mode 7: Duel Cerdas Cermat</option>
-          <option value="ujian_akhir">👑 Mode 8: Ujian Akhir</option>
-        </select>
+        <div class="arena-selectors">
+          <div>
+            <label for="game-surah-select" class="block text-xs font-bold text-[#064E3B] mb-1">Ganti Surah</label>
+            <select id="game-surah-select" onchange="switchGameSurah(Number(this.value))" class="surah-picker bg-white border border-[#D4AF37] text-[#064E3B] font-bold text-xs rounded-xl px-3 py-2 cursor-pointer"></select>
+          </div>
+          <div>
+            <label for="in-game-mode-select" class="block text-xs font-bold text-[#064E3B] mb-1">Mode latihan</label>
+            <select id="in-game-mode-select" aria-label="Mode latihan" onchange="switchInGameMode(this.value)" class="bg-[#FFF8E7] border border-[#D4AF37] text-[#064E3B] font-bold text-xs rounded-xl px-3 py-2 focus:outline-none cursor-pointer">
+              <option value="susun_kata">🧩 Mode 1: Susun Ayat</option>
+              <option value="urut_ayat">📜 Mode 2: Urutkan Ayat</option>
+              <option value="ayat_hilang">✍️ Mode 3: Lengkapi Ayat</option>
+              <option value="sambung_ayat">🔗 Mode 4: Sambung Ayat</option>
+              <option value="mutasyabihat">🛡️ Mode 5: Ayat Serupa</option>
+              <option value="tebak_surah">🏷️ Mode 6: Tebak Surah</option>
+              <option value="duel_1v1">⚔️ Mode 7: Duel Cerdas Cermat</option>
+              <option value="ujian_akhir">👑 Mode 8: Ujian Akhir</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <!-- SCOREBOARD DUEL (Hanya tampil saat Mode 7: Duel Cerdas Cermat) -->
@@ -1137,7 +1158,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     </div>
   </dialog>
 
-  <script src="assets/ui-messages.js?v=3"></script>
+  <script src="assets/ui-messages.js?v=4"></script>
   <script src="assets/interface-language.js?v=2"></script>
   <script src="assets/install.js"></script>
   <script src="assets/game-audio.js?v=3"></script>
@@ -1343,7 +1364,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       updateDailyQuestUI();
       updateReviewHome();
       renderLevelsGrid(currentStage);
-      populateMushafSelector();
+      populateSurahSelectors();
       loadAndRenderMushaf(114);
       renderTeacherDashboard();
     }
@@ -1502,6 +1523,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     function openLevelModal(levelNum) {
       const lvl = JUZ30_LEVELS.find(l => l.level === levelNum) || JUZ30_LEVELS[0];
       selectedModalLevel = lvl;
+      document.getElementById("level-surah-select").value = lvl.surah_id;
 
 
       document.getElementById("modal-lvl-stage").textContent = STAGE_NAMES[lvl.stage];
@@ -1584,6 +1606,9 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       const selector = document.getElementById("in-game-mode-select");
       selector.value = mode;
       selector.disabled = reviewing;
+      const surahSelect = document.getElementById("game-surah-select");
+      surahSelect.value = surahId;
+      surahSelect.disabled = reviewing;
 
       switchMainTab("game", document.querySelectorAll(".bottom-nav")[1]);
 
@@ -2052,15 +2077,34 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     /* =========================================================================
        06. MUSHAF READER (SELURUH 37 SURAH JUZ 30)
     ========================================================================= */
-    function populateMushafSelector() {
-      const sel = document.getElementById("mushaf-surah-select");
-      sel.innerHTML = "";
-      JUZ30_LEVELS.forEach(info => {
-        const opt = document.createElement("option");
-        opt.value = info.surah_id;
-        opt.textContent = tr`Level ${String(info.level).padStart(2, "0")} — Surah ${info.name} (${info.verses} Ayat)`;
-        sel.appendChild(opt);
-      });
+    function populateSurahSelectors() {
+      for (const id of ["mushaf-surah-select", "level-surah-select", "game-surah-select"]) {
+        const select = document.getElementById(id);
+        select.replaceChildren(...JUZ30_LEVELS.map(info => {
+          const option = document.createElement("option");
+          option.value = info.surah_id;
+          option.textContent = id === "game-surah-select"
+            ? `${info.name} · ${info.arab}`
+            : tr`Level ${String(info.level).padStart(2, "0")} — Surah ${info.name} (${info.verses} Ayat)`;
+          return option;
+        }));
+      }
+    }
+
+    function openSelectedLevel(event) {
+      event.preventDefault();
+      const surahId = Number(document.getElementById("level-surah-select").value);
+      const level = JUZ30_LEVELS.find(info => info.surah_id === surahId);
+      if (!level) return;
+      const stageButton = document.querySelectorAll(".stage-tab")[level.stage - 1];
+      if (currentStage !== level.stage && stageButton) selectStage(level.stage, stageButton);
+      openLevelModal(level.level);
+    }
+
+    function switchGameSurah(surahId) {
+      if (reviewSession || !quranCache[surahId]) return;
+      if (currentMode === "duel_1v1") startDuelMode(surahId);
+      else startQuickMode(currentMode, surahId);
     }
 
     function loadAndRenderMushaf(surahId) {
