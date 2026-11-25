@@ -335,7 +335,13 @@ const interfaceMessages = {
     "Pilih dari 37 surah Juz 30": "Choose from all 37 surahs in Juz 30",
     "Pilih Misi": "Choose a Mission",
     "Ganti Surah": "Change Surah",
-    "Murottal tersedia setelah jawaban benar": "Recitation unlocks after a correct answer"
+    "Murottal tersedia setelah jawaban benar": "Recitation unlocks after a correct answer",
+    "Mulai Latihan": "Start Practice",
+    "Opsi Aplikasi": "App Options",
+    "Kelompok latihan": "Practice categories",
+    "Puzzle Hafalan": "Memorization Puzzles",
+    "Kuis Pemahaman": "Comprehension Quizzes",
+    "Duel & Ujian": "Duel & Exam"
   },
   "ar": {
     "+30 XP": "+30 XP",
@@ -672,6 +678,12 @@ const interfaceMessages = {
     "Pilih dari 37 surah Juz 30": "اختر من سور جزء عمّ الـ٣٧",
     "Pilih Misi": "اختر مهمة",
     "Ganti Surah": "غيّر السورة",
-    "Murottal tersedia setelah jawaban benar": "تتاح التلاوة بعد الإجابة الصحيحة"
+    "Murottal tersedia setelah jawaban benar": "تتاح التلاوة بعد الإجابة الصحيحة",
+    "Mulai Latihan": "ابدأ التدريب",
+    "Opsi Aplikasi": "خيارات التطبيق",
+    "Kelompok latihan": "فئات التدريب",
+    "Puzzle Hafalan": "ألغاز الحفظ",
+    "Kuis Pemahaman": "اختبارات الفهم",
+    "Duel & Ujian": "المبارزة والاختبار"
   }
 };

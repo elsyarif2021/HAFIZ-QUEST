@@ -1,8 +1,8 @@
-const cacheName = "hafiz-quest-shell-v3";
+const cacheName = "hafiz-quest-shell-v4";
 const shell = [
   "/", "/manifest.webmanifest",
-  "/assets/ui-messages.js?v=5", "/assets/interface-language.js?v=2",
-  "/assets/game-audio.js?v=3", "/assets/opening.js?v=4",
+  "/assets/ui-messages.js?v=6", "/assets/interface-language.js?v=2",
+  "/assets/game-audio.js?v=3", "/assets/opening.js?v=5",
   "/assets/juz30-translation.js", "/assets/juz30-localized.js", "/assets/install.js",
   "/assets/icons/icon-192.png", "/assets/icons/icon-512.png", "/assets/icons/apple-touch.png",
   "/assets/audio/pembuka-alafasy.mp3", "/assets/audio/murajaah.mp3",

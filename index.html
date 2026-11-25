@@ -320,19 +320,6 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     .audio-menu-panel button[aria-pressed="true"]::after { content: attr(data-label-on); color: #08734e; }
   </style>
   <style>
-    .mode-grid > .surah-quiz-entry {
-      grid-column: 1 / -1;
-      min-height: auto;
-      display: grid;
-      grid-template-columns: auto 1fr;
-      align-items: center;
-      column-gap: .7rem;
-    }
-    @media (min-width: 1024px) {
-      .mode-grid > .surah-quiz-entry { grid-column: auto; }
-      .mode-grid > .surah-quiz-entry.verse-quiz-entry { grid-column: span 2; }
-    }
-    .mode-grid > .surah-quiz-entry > span { grid-row: span 2; margin: 0; }
     .meaning-study { max-width: 48rem; margin-inline: auto; }
     .meaning-options button { border: 1px solid #c9dfd3; min-height: 3.1rem; text-align: left; }
     .verse-quiz .meaning-options button { font-weight: 600; line-height: 1.5; }
@@ -522,6 +509,78 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     .arena-selectors { display: flex; flex-wrap: wrap; gap: .75rem; min-width: 0; }
     .arena-selectors > div, .arena-selectors select { max-width: 100%; }
   </style>
+  <style>
+    #pilih-latihan { scroll-margin-top: 5.5rem; }
+    .hero-actions { display: flex; align-items: flex-start; flex-wrap: wrap; gap: .65rem; margin-top: 1.2rem; }
+    .hero-actions .hero-cta { display: inline-flex; align-items: center; margin: 0; }
+    .hero-options { position: relative; max-width: 100%; }
+    .hero-options summary {
+      min-height: 44px;
+      padding: .65rem .75rem;
+      color: #f0e3bf;
+      font-weight: 700;
+      font-size: .78rem;
+      cursor: pointer;
+    }
+    .hero-options-panel {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: .4rem .65rem;
+      padding: .6rem;
+      border: 1px solid #eac87955;
+      border-radius: .75rem;
+      background: #103b32;
+    }
+    .hero-options-panel #install-app, .hero-options-panel .about-link,
+    .hero-options-panel .language-select { margin: 0; }
+    .hero-options-panel #install-app { min-height: 40px; font-size: .75rem; }
+    .hero-options-panel .about-link { font-size: .75rem; }
+    .practice-filters { display: flex; flex-wrap: wrap; gap: .45rem; margin-bottom: .75rem; }
+    .practice-filters button {
+      min-height: 42px;
+      padding: .5rem .75rem;
+      border: 1px solid #e2e9dd;
+      border-radius: .65rem;
+      background: white;
+      color: #34554b;
+      font-size: .76rem;
+      font-weight: 800;
+    }
+    .practice-filters button[aria-pressed="true"] { background: #164e3d; color: white; border-color: #164e3d; }
+    .mode-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .65rem; }
+    .mode-grid > button {
+      display: grid;
+      grid-template-columns: auto minmax(0,1fr);
+      align-content: center;
+      align-items: center;
+      column-gap: .55rem;
+      min-height: 5.05rem;
+      padding: .65rem;
+      border-radius: .9rem;
+      text-align: start;
+    }
+    .mode-grid > button > span { grid-row: span 2; margin: 0; }
+    .mode-grid > button > p:first-of-type { line-height: 1.3; }
+    .mode-grid > button[hidden] { display: none; }
+    .answer-audio-slot { margin-top: .65rem; }
+    .answer-audio-slot > button { margin-inline: auto; }
+    .puzzle-actions > div { margin-inline-start: auto; }
+    #game-board [hidden] { display: none; }
+    @media(min-width: 820px) {
+      .mode-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+    }
+    @media(max-width: 400px) {
+      header .brand-subtitle { display: none; }
+      header .brand-logo { width: 2rem; height: 2rem; }
+      header h1 { font-size: 1rem; white-space: nowrap; }
+    }
+    @media(max-width: 360px) { header h1 { white-space: normal; } }
+    @media(max-width: 390px) {
+      .mode-grid > button { grid-template-columns: minmax(0,1fr); align-content: start; gap: .3rem; }
+      .mode-grid > button > span { grid-row: auto; }
+    }
+  </style>
 </head>
 <body class="pb-24">
 
@@ -539,7 +598,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
             <h1 id="app-title" tabindex="-1" class="font-extrabold text-lg text-[#064E3B] tracking-tight leading-none">Hafiz Quest</h1>
             <span class="brand-juz text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#DDF5E7] text-[#087F5B] border border-[#B7D7C0]">JUZ 30</span>
           </div>
-          <p class="text-[11px] text-slate-500 mt-0.5">Ruang belajar tahfiz</p>
+          <p class="brand-subtitle text-[11px] text-slate-500 mt-0.5">Ruang belajar tahfiz</p>
         </div>
       </div>
 
@@ -587,16 +646,21 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
           <p class="hero-kicker">PETUALANGAN TAHFIZ · JUZ 30</p>
           <h2>Hafalan tumbuh<br>setiap hari.</h2>
           <p id="current-stage-title" class="hero-stage">Tahap 1: Taman Hafalan</p>
-          <button onclick="openLevelModal(activeLevelNum)" class="btn-gold hero-cta rounded-xl font-extrabold text-sm cursor-pointer">
-            Lanjut Level <span id="btn-next-lvl">01</span> <span aria-hidden="true">→</span>
-          </button>
-          <button id="install-app" type="button">Instal Aplikasi</button>
-          <a href="#tentang-hafiz-quest" class="about-link">Tentang Aplikasi</a>
-          <select class="language-select" data-language-select data-no-i18n aria-label="Bahasa antarmuka">
-            <option value="id" lang="id">Indonesia</option>
-            <option value="en" lang="en">English</option>
-            <option value="ar" lang="ar" dir="rtl">العربية</option>
-          </select>
+          <div class="hero-actions">
+            <a class="btn-gold hero-cta rounded-xl font-extrabold text-sm" href="#pilih-latihan">Mulai Latihan <span aria-hidden="true">→</span></a>
+            <details class="hero-options">
+              <summary>Opsi Aplikasi</summary>
+              <div class="hero-options-panel">
+                <button id="install-app" type="button">Instal Aplikasi</button>
+                <a href="#tentang-hafiz-quest" class="about-link">Tentang Aplikasi</a>
+                <select class="language-select" data-language-select data-no-i18n aria-label="Bahasa antarmuka">
+                  <option value="id" lang="id">Indonesia</option>
+                  <option value="en" lang="en">English</option>
+                  <option value="ar" lang="ar" dir="rtl">العربية</option>
+                </select>
+              </div>
+            </details>
+          </div>
         </div>
 
         <!-- Progress Bar Juz 30 -->
@@ -610,6 +674,84 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
           </div>
         </div>
       </div>
+
+      <!-- Mode latihan -->
+      <section id="pilih-latihan" class="mode-section" aria-labelledby="practice-title" tabindex="-1">
+        <div class="flex items-center justify-between mb-3">
+          <h3 id="practice-title" class="section-title">Pilih latihan</h3>
+          <span class="text-[11px] font-semibold text-[#087F5B]">11 mode</span>
+        </div>
+
+        <div class="practice-filters" role="group" aria-label="Kelompok latihan">
+          <button type="button" aria-controls="practice-modes" aria-pressed="true" onclick="showPracticeGroup('memorization', this)">Puzzle Hafalan</button>
+          <button type="button" aria-controls="practice-modes" aria-pressed="false" onclick="showPracticeGroup('meaning', this)">Kuis Pemahaman</button>
+          <button type="button" aria-controls="practice-modes" aria-pressed="false" onclick="showPracticeGroup('challenge', this)">Duel &amp; Ujian</button>
+        </div>
+        <div id="practice-modes" class="mode-grid">
+          <button data-mode-group="memorization" onclick="startQuickMode('susun_kata', 114)" class="p-3 rounded-2xl bg-[#DDF5E7]/60 hover:bg-[#DDF5E7] border border-[#B7D7C0] text-left transition cursor-pointer">
+            <span aria-hidden="true">🧩</span>
+            <p class="font-bold text-xs text-[#064E3B]">Susun Ayat</p>
+            <p class="text-[10px] text-slate-600 mt-0.5">Susun token kata kanan ke kiri</p>
+          </button>
+
+          <button data-mode-group="memorization" onclick="startQuickMode('urut_ayat', 114)" class="p-3 rounded-2xl bg-[#FFF8E7] hover:bg-amber-100/70 border border-[#D4AF37]/40 text-left transition cursor-pointer">
+            <span aria-hidden="true">📜</span>
+            <p class="font-bold text-xs text-[#064E3B]">Urutkan Ayat</p>
+            <p class="text-[10px] text-slate-600 mt-0.5">Urutkan ayat tanpa nomor bantu</p>
+          </button>
+
+          <button data-mode-group="memorization" onclick="startQuickMode('ayat_hilang', 112)" class="p-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100/70 border border-emerald-200 text-left transition cursor-pointer">
+            <span aria-hidden="true">✍️</span>
+            <p class="font-bold text-xs text-[#064E3B]">Lengkapi Ayat</p>
+            <p class="text-[10px] text-slate-600 mt-0.5">Isi lafaz yang disembunyikan</p>
+          </button>
+
+          <button data-mode-group="memorization" onclick="startQuickMode('sambung_ayat', 113)" class="p-3 rounded-2xl bg-teal-50 hover:bg-teal-100/70 border border-teal-200 text-left transition cursor-pointer">
+            <span aria-hidden="true">🔗</span>
+            <p class="font-bold text-xs text-[#064E3B]">Sambung Ayat</p>
+            <p class="text-[10px] text-slate-600 mt-0.5">Pilih lanjutan ayat berikutnya</p>
+          </button>
+
+          <button data-mode-group="memorization" onclick="startQuickMode('mutasyabihat', 109)" class="p-3 rounded-2xl bg-amber-50/80 hover:bg-amber-100/80 border border-amber-300/60 text-left transition cursor-pointer">
+            <span aria-hidden="true">🛡️</span>
+            <p class="font-bold text-xs text-[#064E3B]">Ayat Serupa</p>
+            <p class="text-[10px] text-slate-600 mt-0.5">Bedakan ayat mutasyabihat</p>
+          </button>
+
+          <button data-mode-group="memorization" onclick="startQuickMode('tebak_surah', 110)" class="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition cursor-pointer">
+            <span aria-hidden="true">🏷️</span>
+            <p class="font-bold text-xs text-[#064E3B]">Tebak Surah</p>
+            <p class="text-[10px] text-slate-600 mt-0.5">Identifikasi nama surah & posisi ayat</p>
+          </button>
+
+          <button data-mode-group="challenge" hidden onclick="startDuelMode(114)" class="p-3 rounded-2xl bg-sky-50 hover:bg-sky-100/80 border border-sky-200 text-left transition cursor-pointer">
+            <span aria-hidden="true">⚔️</span>
+            <p class="font-bold text-xs text-[#064E3B]">Duel Cerdas Cermat</p>
+            <p class="text-[10px] text-slate-600 mt-0.5">Dengarkan ayat, lalu sambung bergantian</p>
+          </button>
+
+          <button data-mode-group="challenge" hidden onclick="startQuickMode('ujian_akhir', 114)" class="mode-featured p-3 rounded-2xl clay-emerald text-white text-left transition hover:brightness-105 cursor-pointer">
+            <span aria-hidden="true">👑</span>
+            <p class="font-extrabold text-xs text-[#fef08a]">Ujian Akhir Mutqin</p>
+            <p class="text-[10px] text-[#DDF5E7] mt-0.5">Uji susunan ayat surah pilihan</p>
+          </button>
+          <button data-mode-group="meaning" hidden onclick="openSurahQuiz('meaning')" class="p-3 rounded-2xl text-left transition cursor-pointer">
+            <span aria-hidden="true">📚</span>
+            <p class="font-extrabold text-xs">Cocokkan Nama Surah</p>
+            <p class="text-[10px] mt-0.5">Pasangkan nama surah dengan artinya</p>
+          </button>
+          <button data-mode-group="meaning" hidden onclick="openSurahQuiz('count')" class="p-3 rounded-2xl text-left transition cursor-pointer">
+            <span aria-hidden="true">🔢</span>
+            <p class="font-extrabold text-xs">Tebak Jumlah Ayat</p>
+            <p class="text-[10px] mt-0.5">Pilih jumlah ayat sesuai nama surah</p>
+          </button>
+          <button data-mode-group="meaning" hidden onclick="openSurahQuiz('translation')" class="p-3 rounded-2xl text-left transition cursor-pointer">
+            <span aria-hidden="true">💬</span>
+            <p class="font-extrabold text-xs">Tebak Arti Ayat</p>
+            <p class="text-[10px] mt-0.5">Pilih terjemahan ayat dalam bahasa Indonesia</p>
+          </button>
+        </div>
+      </section>
 
       <div class="clay-card p-4 flex flex-wrap items-center justify-between gap-3">
         <div>
@@ -638,85 +780,20 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         </button>
       </div>
 
-      <!-- 8 MODE PERMAINAN & LATIHAN KHUSUS -->
-      <div class="mode-section">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="section-title">Pilih latihan</h3>
-          <span class="text-[11px] font-semibold text-[#087F5B]">11 mode</span>
-        </div>
-
-        <div class="mode-grid grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <button onclick="startQuickMode('susun_kata', 114)" class="p-3 rounded-2xl bg-[#DDF5E7]/60 hover:bg-[#DDF5E7] border border-[#B7D7C0] text-left transition cursor-pointer">
-            <span class="text-lg block mb-1">🧩</span>
-            <p class="font-bold text-xs text-[#064E3B]">Susun Ayat</p>
-            <p class="text-[10px] text-slate-600 mt-0.5">Susun token kata kanan ke kiri</p>
-          </button>
-
-          <button onclick="startQuickMode('urut_ayat', 114)" class="p-3 rounded-2xl bg-[#FFF8E7] hover:bg-amber-100/70 border border-[#D4AF37]/40 text-left transition cursor-pointer">
-            <span class="text-lg block mb-1">📜</span>
-            <p class="font-bold text-xs text-[#064E3B]">Urutkan Ayat</p>
-            <p class="text-[10px] text-slate-600 mt-0.5">Urutkan ayat tanpa nomor bantu</p>
-          </button>
-
-          <button onclick="startQuickMode('ayat_hilang', 112)" class="p-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100/70 border border-emerald-200 text-left transition cursor-pointer">
-            <span class="text-lg block mb-1">✍️</span>
-            <p class="font-bold text-xs text-[#064E3B]">Lengkapi Ayat</p>
-            <p class="text-[10px] text-slate-600 mt-0.5">Isi lafaz yang disembunyikan</p>
-          </button>
-
-          <button onclick="startQuickMode('sambung_ayat', 113)" class="p-3 rounded-2xl bg-teal-50 hover:bg-teal-100/70 border border-teal-200 text-left transition cursor-pointer">
-            <span class="text-lg block mb-1">🔗</span>
-            <p class="font-bold text-xs text-[#064E3B]">Sambung Ayat</p>
-            <p class="text-[10px] text-slate-600 mt-0.5">Pilih lanjutan ayat berikutnya</p>
-          </button>
-
-          <button onclick="startQuickMode('mutasyabihat', 109)" class="p-3 rounded-2xl bg-amber-50/80 hover:bg-amber-100/80 border border-amber-300/60 text-left transition cursor-pointer">
-            <span class="text-lg block mb-1">🛡️</span>
-            <p class="font-bold text-xs text-[#064E3B]">Ayat Serupa</p>
-            <p class="text-[10px] text-slate-600 mt-0.5">Bedakan ayat mutasyabihat</p>
-          </button>
-
-          <button onclick="startQuickMode('tebak_surah', 110)" class="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition cursor-pointer">
-            <span class="text-lg block mb-1">🏷️</span>
-            <p class="font-bold text-xs text-[#064E3B]">Tebak Surah</p>
-            <p class="text-[10px] text-slate-600 mt-0.5">Identifikasi nama surah & posisi ayat</p>
-          </button>
-
-          <button onclick="startDuelMode(114)" class="p-3 rounded-2xl bg-sky-50 hover:bg-sky-100/80 border border-sky-200 text-left transition cursor-pointer">
-            <span class="text-lg block mb-1">⚔️</span>
-            <p class="font-bold text-xs text-[#064E3B]">Duel Cerdas Cermat</p>
-            <p class="text-[10px] text-slate-600 mt-0.5">Dengarkan ayat, lalu sambung bergantian</p>
-          </button>
-
-          <button onclick="startQuickMode('ujian_akhir', 114)" class="mode-featured p-3 rounded-2xl clay-emerald text-white text-left transition hover:brightness-105 cursor-pointer">
-            <span class="text-lg block mb-1">👑</span>
-            <p class="font-extrabold text-xs text-[#fef08a]">Ujian Akhir Mutqin</p>
-            <p class="text-[10px] text-[#DDF5E7] mt-0.5">Uji susunan ayat surah pilihan</p>
-          </button>
-          <button onclick="openSurahQuiz('meaning')" class="surah-quiz-entry p-3 rounded-2xl text-left transition cursor-pointer">
-            <span class="text-lg block mb-1" aria-hidden="true">📚</span>
-            <p class="font-extrabold text-xs">Cocokkan Nama Surah</p>
-            <p class="text-[10px] mt-0.5">Pasangkan nama surah dengan artinya</p>
-          </button>
-          <button onclick="openSurahQuiz('count')" class="surah-quiz-entry p-3 rounded-2xl text-left transition cursor-pointer">
-            <span class="text-lg block mb-1" aria-hidden="true">🔢</span>
-            <p class="font-extrabold text-xs">Tebak Jumlah Ayat</p>
-            <p class="text-[10px] mt-0.5">Pilih jumlah ayat sesuai nama surah</p>
-          </button>
-          <button onclick="openSurahQuiz('translation')" class="surah-quiz-entry verse-quiz-entry p-3 rounded-2xl text-left transition cursor-pointer">
-            <span class="text-lg block mb-1" aria-hidden="true">💬</span>
-            <p class="font-extrabold text-xs">Tebak Arti Ayat</p>
-            <p class="text-[10px] mt-0.5">Pilih terjemahan ayat dalam bahasa Indonesia</p>
-          </button>
-        </div>
-      </div>
-
       <!-- PETA 5 TAHAP PETUALANGAN (37 LEVEL) -->
       <div>
         <div class="flex items-center justify-between mb-3">
           <h3 class="section-title">Peta hafalan</h3>
           <span class="text-xs font-semibold text-[#087F5B]">564 Ayat</span>
         </div>
+
+        <form onsubmit="openSelectedLevel(event)" class="clay-card p-4 mb-4 flex flex-wrap items-end gap-3">
+          <div class="min-w-0">
+            <label for="level-surah-select" class="block text-xs font-bold text-[#064E3B] mb-1">Pilih dari 37 surah Juz 30</label>
+            <select id="level-surah-select" class="surah-picker bg-white border border-[#D4AF37] text-[#064E3B] font-bold text-xs rounded-xl px-3 py-2 cursor-pointer"></select>
+          </div>
+          <button type="submit" class="btn-emerald rounded-xl px-4 py-2 text-xs font-bold">Pilih Misi</button>
+        </form>
 
         <!-- Stage Filter Tabs -->
         <div id="stage-tabs" class="flex gap-2 overflow-x-auto no-scrollbar pb-2 mb-4">
@@ -736,14 +813,6 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
             🏰 Tahap 5: Istana Ilmu (34–37)
           </button>
         </div>
-
-        <form onsubmit="openSelectedLevel(event)" class="clay-card p-4 mb-4 flex flex-wrap items-end gap-3">
-          <div class="min-w-0">
-            <label for="level-surah-select" class="block text-xs font-bold text-[#064E3B] mb-1">Pilih dari 37 surah Juz 30</label>
-            <select id="level-surah-select" class="surah-picker bg-white border border-[#D4AF37] text-[#064E3B] font-bold text-xs rounded-xl px-3 py-2 cursor-pointer"></select>
-          </div>
-          <button type="submit" class="btn-emerald rounded-xl px-4 py-2 text-xs font-bold">Pilih Misi</button>
-        </form>
 
         <!-- Grid Kartu Level -->
         <div id="levels-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -800,11 +869,12 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
             <p id="meaning-arabic" class="quran-text text-3xl text-[#064E3B]" lang="ar"></p>
             <h3 id="meaning-name" class="text-2xl font-extrabold text-[#064E3B]" tabindex="-1"></h3>
           </div>
-          <button id="quiz-verse-audio" type="button" class="recite-button hidden mt-3" aria-pressed="false" onclick="playQuizVerseAudio()">🔊 <span data-recitation-label>Dengarkan Ayat</span></button>
+          <p id="quiz-audio-note" class="hidden text-xs text-slate-500 mt-3">Murottal tersedia setelah jawaban benar</p>
           <p id="surah-quiz-question" class="font-semibold text-sm mt-4 mb-3"></p>
           <div id="meaning-options" class="meaning-options grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
         </div>
         <p id="meaning-feedback" class="text-sm font-semibold" role="status"></p>
+        <button id="quiz-verse-audio" type="button" class="recite-button hidden" aria-pressed="false" onclick="playQuizVerseAudio()">🔊 <span data-recitation-label>Dengarkan Ayat</span></button>
         <button id="meaning-next" onclick="nextSurahQuizQuestion()" class="hidden btn-emerald rounded-xl px-4 py-3 text-sm font-bold">Soal Berikutnya →</button>
       </div>
       <p id="verse-quiz-source" class="hidden text-xs text-slate-600"><span id="verse-quiz-edition">Terjemahan bahasa Indonesia dari</span> <a href="https://api.alquran.cloud/v1/juz/30/id.indonesian" class="underline" rel="noopener" target="_blank">Al Quran Cloud</a></p>
@@ -873,10 +943,12 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         <!-- Audio & Petunjuk Bar -->
         <div class="flex flex-wrap items-center justify-between gap-2 pb-4 mb-5 border-b border-slate-100">
           <div class="flex items-center gap-2">
-            <button onclick="playVerseAudio()" id="btn-audio" aria-pressed="false" class="px-3.5 py-2 rounded-xl bg-[#DDF5E7] hover:bg-[#B7D7C0] text-[#064E3B] font-bold text-xs flex items-center gap-1.5 transition cursor-pointer">
-              <span>🔊</span>
-              <span id="verse-audio-label" data-recitation-label>Dengarkan Ayat</span>
-            </button>
+            <span id="duel-audio-slot" hidden>
+              <button onclick="playVerseAudio()" id="btn-audio" aria-pressed="false" class="px-3.5 py-2 rounded-xl bg-[#DDF5E7] hover:bg-[#B7D7C0] text-[#064E3B] font-bold text-xs flex items-center gap-1.5 transition cursor-pointer">
+                <span>🔊</span>
+                <span id="verse-audio-label" data-recitation-label>Dengarkan Ayat</span>
+              </button>
+            </span>
             <button onclick="useHint()" class="px-3.5 py-2 rounded-xl bg-[#FFF8E7] hover:bg-amber-100 border border-[#D4AF37]/50 text-[#92400e] font-bold text-xs flex items-center gap-1.5 transition cursor-pointer">
               <span>💡</span>
               <span>Petunjuk</span>
@@ -902,10 +974,13 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         <div id="feedback-box" role="status" class="hidden mt-5 p-4 rounded-2xl text-center">
           <p id="feedback-title" class="font-extrabold text-sm"></p>
           <p id="feedback-verse" class="quran-text text-2xl text-[#064E3B] mt-2"></p>
+          <div id="answer-audio-slot" class="answer-audio-slot" hidden></div>
         </div>
 
+        <p id="puzzle-audio-note" class="text-xs text-slate-500 mt-4">Murottal tersedia setelah jawaban benar</p>
+
         <!-- ACTION BUTTONS -->
-        <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
+        <div class="puzzle-actions mt-6 flex flex-wrap items-center gap-3">
           <button onclick="resetCurrentPuzzle()" class="px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">
             🔄 Hapus Susunan / Ulangi
           </button>
@@ -914,7 +989,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
             <button id="btn-check-answer" onclick="checkPuzzleAnswer()" class="btn-emerald px-6 py-3 rounded-xl font-extrabold text-xs md:text-sm cursor-pointer">
               ✓ Periksa Jawaban
             </button>
-            <button id="btn-next-verse" onclick="nextPuzzleStep()" class="hidden btn-gold px-6 py-3 rounded-xl font-extrabold text-xs md:text-sm cursor-pointer">
+            <button id="btn-next-verse" onclick="nextPuzzleStep()" class="hidden btn-emerald px-6 py-3 rounded-xl font-extrabold text-xs md:text-sm cursor-pointer">
               Lanjut Berikutnya →
             </button>
           </div>
@@ -1159,11 +1234,11 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     </div>
   </dialog>
 
-  <script src="assets/ui-messages.js?v=5"></script>
+  <script src="assets/ui-messages.js?v=6"></script>
   <script src="assets/interface-language.js?v=2"></script>
   <script src="assets/install.js"></script>
   <script src="assets/game-audio.js?v=3"></script>
-  <script src="assets/opening.js?v=4"></script>
+  <script src="assets/opening.js?v=5"></script>
   <script src="assets/juz30-translation.js"></script>
   <script src="assets/juz30-localized.js"></script>
   <script>
@@ -1423,7 +1498,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       document.getElementById("juz-progress-label").textContent = tr`${doneCount} / 37 Surah Selesai`;
       const pct = Math.round((doneCount / 37) * 100);
       document.getElementById("juz-progress-bar").style.width = `${pct}%`;
-      document.getElementById("btn-next-lvl").textContent = String(activeLevelNum).padStart(2, "0");
+
     }
 
     function refreshDailyState() {
@@ -1545,6 +1620,15 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       startQuickMode(mode, selectedModalLevel.surah_id);
     }
 
+    function showPracticeGroup(group, activeFilter) {
+      document.querySelectorAll(".practice-filters button").forEach(button => {
+        button.setAttribute("aria-pressed", String(button === activeFilter));
+      });
+      document.querySelectorAll("[data-mode-group]").forEach(button => {
+        button.hidden = button.dataset.modeGroup !== group;
+      });
+    }
+
     function switchMainTab(tab, btn) {
       gameAudio.changeView(tab);
       stopRecitation();
@@ -1652,6 +1736,13 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       document.querySelector('[onclick="useHint()"]').disabled = competitive;
       const audioButton = document.getElementById("btn-audio");
       const hasDuelPrompt = currentMode === "duel_1v1";
+      const promptSlot = document.getElementById("duel-audio-slot");
+      promptSlot.appendChild(audioButton);
+      promptSlot.hidden = !hasDuelPrompt;
+      document.getElementById("answer-audio-slot").hidden = true;
+      document.getElementById("puzzle-audio-note").hidden = hasDuelPrompt;
+      document.querySelector('[onclick="resetCurrentPuzzle()"]').hidden = false;
+      document.querySelector('[onclick="useHint()"]').hidden = competitive;
       setAnswerAudio(audioButton, hasDuelPrompt, hasDuelPrompt ? tr("Putar Ulang Ayat Pemantik") : tr("Dengarkan Ayat"));
       document.querySelector('[onclick="resetCurrentPuzzle()"]').disabled = false;
       document.getElementById("btn-next-verse").textContent = tr("Lanjut →");
@@ -2018,7 +2109,15 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
     function lockPuzzle(correct) {
       puzzleLocked = true;
-      setAnswerAudio(document.getElementById("btn-audio"), correct);
+      const audioButton = document.getElementById("btn-audio");
+      const answerAudio = document.getElementById("answer-audio-slot");
+      answerAudio.appendChild(audioButton);
+      answerAudio.hidden = !correct;
+      document.getElementById("duel-audio-slot").hidden = true;
+      document.getElementById("puzzle-audio-note").hidden = true;
+      document.querySelector('[onclick="resetCurrentPuzzle()"]').hidden = true;
+      document.querySelector('[onclick="useHint()"]').hidden = true;
+      setAnswerAudio(audioButton, correct);
       document.querySelectorAll("#answer-zone button, #pool-zone button, [onclick='useHint()'], [onclick='resetCurrentPuzzle()']").forEach(button => {
         button.disabled = true;
       });
@@ -2479,7 +2578,8 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       document.getElementById("meaning-arabic").textContent = surah.verse?.text ?? surah.arab;
       const quizAudio = document.getElementById("quiz-verse-audio");
       setAnswerAudio(quizAudio, false);
-      quizAudio.classList.toggle("hidden", !surah.verse);
+      quizAudio.classList.add("hidden");
+      document.getElementById("quiz-audio-note").classList.toggle("hidden", !surah.verse);
       const name = document.getElementById("meaning-name");
       name.textContent = surah.verse ? tr`${surah.name} · Ayat ${surah.verse.verse_number}` : surah.name;
       name.classList.toggle("text-sm", Boolean(surah.verse));
@@ -2513,7 +2613,11 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       document.getElementById("meaning-feedback").textContent =
         `${correct ? tr("MasyaAllah, tepat!") : tr("Belum tepat.")} ${surahQuizModes[surahQuizMode].explanation(surah, answer)}`;
       stopRecitation();
-      setAnswerAudio(document.getElementById("quiz-verse-audio"), correct && Boolean(surah.verse));
+      const quizAudio = document.getElementById("quiz-verse-audio");
+      const canPlay = correct && Boolean(surah.verse);
+      setAnswerAudio(quizAudio, canPlay);
+      quizAudio.classList.toggle("hidden", !canPlay);
+      document.getElementById("quiz-audio-note").classList.add("hidden");
       gameAudio.narrate(correct ? "correct" : "duelMiss");
       const next = document.getElementById("meaning-next");
       next.textContent = surahQuizIndex + 1 === surahQuizDeck.length ? tr("Lihat Hasil →") : tr("Soal Berikutnya →");
@@ -2535,6 +2639,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         return;
       }
       document.getElementById("meaning-question").classList.add("hidden");
+      document.getElementById("quiz-verse-audio").classList.add("hidden");
       document.getElementById("meaning-feedback").textContent =
         tr`Latihan selesai. ${surahQuizModes[surahQuizMode].summary(surahQuizScore, surahQuizDeck.length)}`;
       document.getElementById("meaning-next").textContent = tr("Main Lagi");
