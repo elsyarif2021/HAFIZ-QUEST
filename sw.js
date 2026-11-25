@@ -1,4 +1,4 @@
-const cacheName = "hafiz-quest-shell-v4";
+const cacheName = "hafiz-quest-shell-v5";
 const shell = [
   "/", "/manifest.webmanifest",
   "/assets/ui-messages.js?v=6", "/assets/interface-language.js?v=2",

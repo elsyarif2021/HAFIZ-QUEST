@@ -6,7 +6,7 @@ Dikembangkan oleh **Ustadz Liyas Syarifudin, S.Pd.I., M.Pd**
 
 ## Bahasa
 
-Pilih **Indonesia**, **English**, atau **العربية** di layar pembuka atau dasbor. Pilihan tersimpan di browser dan tersedia sebagai tautan langsung melalui `?lang=id`, `?lang=en`, atau `?lang=ar`. Antarmuka Arab menggunakan tata letak kanan-ke-kiri. Narator mengikuti bahasa pilihan, sedangkan bacaan Al-Qur’an tetap berbahasa Arab.
+Pilih **Indonesia**, **English**, atau **العربية** di menu **Opsi Aplikasi** pada dasbor. Pilihan tersimpan di browser dan tersedia sebagai tautan langsung melalui `?lang=id`, `?lang=en`, atau `?lang=ar`. Antarmuka Arab menggunakan tata letak kanan-ke-kiri. Narator mengikuti bahasa pilihan, sedangkan bacaan Al-Qur’an tetap berbahasa Arab.
 
 ## Cocokkan Nama Surah
 
