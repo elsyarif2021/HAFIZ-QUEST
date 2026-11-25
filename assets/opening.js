@@ -27,7 +27,8 @@
     start.focus();
   }
 
-  start.addEventListener("click", async () => {
+  async function playOpening() {
+    if (!dialog.open || start.disabled) return;
     start.disabled = true;
     status.textContent = "Memutar bacaan Mishary Alafasy…";
     skip.focus();
@@ -36,10 +37,19 @@
     try {
       await audio.play();
       if (dialog.open) highlightPhrase();
-    } catch {
-      showPlaybackError();
+    } catch (error) {
+      if (error.name !== "NotAllowedError") {
+        showPlaybackError();
+        return;
+      }
+      if (!dialog.open) return;
+      start.disabled = false;
+      status.textContent = "Ketuk Mulai dengan Bacaan untuk menyalakan suara.";
+      start.focus();
     }
-  });
+  }
+
+  start.addEventListener("click", playOpening);
   skip.addEventListener("click", () => dialog.close());
   audio.addEventListener("timeupdate", highlightPhrase);
   audio.addEventListener("error", showPlaybackError);
@@ -52,4 +62,5 @@
 
   gameAudio.setAppSuspended(true);
   dialog.showModal();
+  void playOpening();
 })();

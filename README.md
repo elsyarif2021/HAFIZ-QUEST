@@ -16,7 +16,7 @@ Pilih terjemahan bahasa Indonesia dari empat pilihan. Setiap sesi memuat 10 soal
 
 ## Pembuka
 
-Tombol **Mulai dengan Bacaan** memutar ta’awudz diikuti basmalah, dengan teks yang disorot sesuai bacaan. Tombol **Lewati** membuka dasbor langsung. Rekaman Mishary Alafasy diambil dari bagian pembuka [Al-Fatihah, QuranicAudio](https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/001.mp3).
+Ta’awudz dan basmalah diputar saat aplikasi dibuka apabila browser mengizinkan suara otomatis. Jika browser meminta interaksi, tekan **Mulai dengan Bacaan**. Teks disorot mengikuti bacaan. Tombol **Lewati** membuka dasbor langsung. Rekaman Mishary Alafasy diambil dari bagian pembuka [Al-Fatihah, QuranicAudio](https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/001.mp3).
 
 ## Menjalankan
 
