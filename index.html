@@ -319,11 +319,13 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       column-gap: .7rem;
     }
     @media (min-width: 1024px) {
-      .mode-grid > .surah-quiz-entry { grid-column: span 2; }
+      .mode-grid > .surah-quiz-entry { grid-column: auto; }
+      .mode-grid > .surah-quiz-entry.verse-quiz-entry { grid-column: span 2; }
     }
     .mode-grid > .surah-quiz-entry > span { grid-row: span 2; margin: 0; }
     .meaning-study { max-width: 48rem; margin-inline: auto; }
     .meaning-options button { border: 1px solid #c9dfd3; min-height: 3.1rem; text-align: left; }
+    .verse-quiz .meaning-options button { font-weight: 600; line-height: 1.5; }
     .meaning-options button:hover:not(:disabled) { background: #edf5ef; }
     .meaning-options button[data-result="right"] { background: #e0f4e7; border-color: #43886d; }
     .meaning-options button[data-result="wrong"] { background: #fef3db; border-color: #bc8531; }
@@ -430,7 +432,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       <div class="mode-section">
         <div class="flex items-center justify-between mb-3">
           <h3 class="section-title">Pilih latihan</h3>
-          <span class="text-[11px] font-semibold text-[#087F5B]">10 mode</span>
+          <span class="text-[11px] font-semibold text-[#087F5B]">11 mode</span>
         </div>
 
         <div class="mode-grid grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -491,6 +493,11 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
             <p class="font-extrabold text-xs">Tebak Jumlah Ayat</p>
             <p class="text-[10px] mt-0.5">Pilih jumlah ayat sesuai nama surah</p>
           </button>
+          <button onclick="openSurahQuiz('translation')" class="surah-quiz-entry verse-quiz-entry p-3 rounded-2xl text-left transition cursor-pointer">
+            <span class="text-lg block mb-1" aria-hidden="true">💬</span>
+            <p class="font-extrabold text-xs">Tebak Arti Ayat</p>
+            <p class="text-[10px] mt-0.5">Pilih terjemahan ayat dalam bahasa Indonesia</p>
+          </button>
         </div>
       </div>
 
@@ -549,6 +556,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         <p id="meaning-feedback" class="text-sm font-semibold" role="status"></p>
         <button id="meaning-next" onclick="nextSurahQuizQuestion()" class="hidden btn-emerald rounded-xl px-4 py-3 text-sm font-bold">Soal Berikutnya →</button>
       </div>
+      <p id="verse-quiz-source" class="hidden text-xs text-slate-600">Terjemahan bahasa Indonesia dari <a href="https://api.alquran.cloud/v1/juz/30/id.indonesian" class="underline" rel="noopener" target="_blank">Al Quran Cloud</a></p>
       <p id="surah-quiz-source" class="text-xs text-slate-600">Sumber arti nama surah <a href="https://equran.id/" class="underline" rel="noopener" target="_blank">EQuran</a></p>
     </section>
 
@@ -846,6 +854,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
   </nav>
 
   <script src="assets/game-audio.js"></script>
+  <script src="assets/juz30-translation.js"></script>
   <script>
     /* =========================================================================
        01. METADATA 37 LEVEL JUZ 30 (AN-NAS -> AN-NABA, TOTAL 564 AYAT)
@@ -1874,6 +1883,9 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       113: "Subuh",
       114: "Manusia",
     };
+    const juz30VerseQuestions = JUZ30_LEVELS.flatMap(surah =>
+      quranCache[surah.surah_id].map(verse => ({ ...surah, verse }))
+    );
     const surahQuizModes = {
       meaning: {
         title: "Cocokkan Nama Surah",
@@ -1888,6 +1900,15 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         answer: surah => `${surah.verses} ayat`,
         explanation: (surah, answer) => `Surah ${surah.name} memiliki ${answer}.`,
         summary: (score, total) => `Kamu menjawab ${score} dari ${total} soal jumlah ayat dengan tepat.`
+      },
+      translation: {
+        title: "Tebak Arti Ayat",
+        question: "Terjemahan mana yang sesuai dengan ayat di atas?",
+        items: juz30VerseQuestions,
+        sessionSize: 10,
+        answer: item => juz30Translation[item.verse.audioNumber],
+        explanation: (item, answer) => `Terjemahan ${item.name} ayat ${item.verse.verse_number} adalah “${answer}”`,
+        summary: (score, total) => `Kamu menjawab ${score} dari ${total} soal terjemahan ayat dengan tepat.`
       }
     };
     let surahQuizMode = "meaning";
@@ -1903,7 +1924,11 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       document.getElementById("surah-quiz-question").textContent = quiz.question;
       document.getElementById("surah-quiz-source").classList.toggle("hidden", mode !== "meaning");
       switchMainTab("meanings", document.querySelectorAll(".bottom-nav")[1]);
-      surahQuizDeck = shuffleArray(JUZ30_LEVELS);
+      const isTranslation = mode === "translation";
+      document.getElementById("verse-quiz-source").classList.toggle("hidden", !isTranslation);
+      document.getElementById("view-meanings").classList.toggle("verse-quiz", isTranslation);
+      const items = quiz.items ?? JUZ30_LEVELS;
+      surahQuizDeck = shuffleArray(items).slice(0, quiz.sessionSize ?? items.length);
       surahQuizIndex = 0;
       surahQuizScore = 0;
       renderSurahQuizQuestion();
@@ -1914,14 +1939,17 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       const surah = surahQuizDeck[surahQuizIndex];
       const quiz = surahQuizModes[surahQuizMode];
       const answer = quiz.answer(surah);
-      const alternatives = [...new Set(JUZ30_LEVELS.map(quiz.answer))].filter(text => text !== answer);
+      const candidates = (quiz.items ?? JUZ30_LEVELS).map(quiz.answer);
+      const alternatives = [...new Set(candidates)].filter(text => text !== answer);
       const options = shuffleArray([answer, ...shuffleArray(alternatives).slice(0, 3)]);
       document.getElementById("meaning-question").classList.remove("hidden");
       document.getElementById("meaning-progress").textContent = `Soal ${surahQuizIndex + 1} dari ${surahQuizDeck.length}`;
       document.getElementById("meaning-score").textContent = `${surahQuizScore} benar`;
-      document.getElementById("meaning-arabic").textContent = surah.arab;
+      document.getElementById("meaning-arabic").textContent = surah.verse?.text ?? surah.arab;
       const name = document.getElementById("meaning-name");
-      name.textContent = surah.name;
+      name.textContent = surah.verse ? `${surah.name} · Ayat ${surah.verse.verse_number}` : surah.name;
+      name.classList.toggle("text-sm", Boolean(surah.verse));
+      name.classList.toggle("text-2xl", !surah.verse);
       document.getElementById("meaning-feedback").textContent = "";
       document.getElementById("meaning-next").classList.add("hidden");
 
