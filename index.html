@@ -373,6 +373,55 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       .header-actions > button:not(.close-app-button), .header-actions > div { padding-inline: .4rem; }
     }
   </style>
+  <style>
+    .opening-dialog[open] {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      margin: 0;
+      padding: 1rem;
+      overflow: auto;
+      color: #fffaf0;
+      background: radial-gradient(ellipse at 50% 12%, #256456, #103b32 52%, #0a2e27);
+    }
+    .opening-card {
+      width: min(100%, 36rem);
+      padding: clamp(1.15rem, 4vw, 2.5rem);
+      border: 1px solid #d4b47565;
+      border-radius: 3.2rem 3.2rem 1.35rem 1.35rem;
+      text-align: center;
+      animation: opening-enter .65s ease-out both;
+    }
+    .opening-emblem { color: #efd38d; font-size: 2rem; }
+    .opening-card h2 {
+      font: 400 clamp(2rem, 6vw, 3.25rem)/1.1 "DM Serif Display", Georgia, serif;
+    }
+    .opening-phrase {
+      padding: .2rem .45rem .35rem;
+      border: 1px solid transparent;
+      border-radius: .9rem;
+      transition: background-color .4s, border-color .4s;
+    }
+    .opening-phrase.is-current {
+      border-color: #d4b47579;
+      background: #eac87917;
+    }
+    .opening-phrase .quran-text { font-size: clamp(1.35rem, 5vw, 1.9rem); }
+    .opening-skip { min-height: 44px; padding: .5rem .9rem; text-decoration: underline; }
+    @keyframes opening-enter {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .opening-card { animation: none; }
+      .opening-phrase { transition: none; }
+    }
+  </style>
 </head>
 <body class="pb-24">
 
@@ -387,7 +436,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="font-extrabold text-lg text-[#064E3B] tracking-tight leading-none">Hafiz Quest</h1>
+            <h1 id="app-title" tabindex="-1" class="font-extrabold text-lg text-[#064E3B] tracking-tight leading-none">Hafiz Quest</h1>
             <span class="brand-juz text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#DDF5E7] text-[#087F5B] border border-[#B7D7C0]">JUZ 30</span>
           </div>
           <p class="text-[11px] text-slate-500 mt-0.5">Ruang belajar tahfiz</p>
@@ -899,6 +948,26 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     </div>
   </nav>
 
+  <dialog id="opening" class="opening-dialog" aria-labelledby="opening-title">
+    <div class="opening-card space-y-3">
+      <p class="opening-emblem" aria-hidden="true">✦</p>
+      <h2 id="opening-title">Hafiz Quest</h2>
+      <div id="opening-taawudz" class="opening-phrase">
+        <p class="text-xs font-bold text-[#efd38d]">Ta’awudz</p>
+        <p class="quran-text" lang="ar" dir="rtl">أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ</p>
+      </div>
+      <div id="opening-basmala" class="opening-phrase">
+        <p class="text-xs font-bold text-[#efd38d]">Basmalah</p>
+        <p class="quran-text" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+      </div>
+      <p id="opening-status" class="text-xs" role="status"></p>
+      <div class="flex flex-wrap items-center justify-center gap-2">
+        <button id="opening-play" class="btn-gold rounded-xl px-5 py-3 text-sm font-extrabold" type="button" autofocus>Mulai dengan Bacaan</button>
+        <button id="opening-skip" class="opening-skip text-sm font-semibold" type="button">Lewati</button>
+      </div>
+    </div>
+  </dialog>
+
   <dialog id="app-closed" aria-labelledby="app-closed-title">
     <div class="clay-card p-7 text-center space-y-4">
       <h2 id="app-closed-title" class="section-title">Hafiz Quest ditutup</h2>
@@ -908,6 +977,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
   </dialog>
 
   <script src="assets/game-audio.js"></script>
+  <script src="assets/opening.js"></script>
   <script src="assets/juz30-translation.js"></script>
   <script>
     /* =========================================================================

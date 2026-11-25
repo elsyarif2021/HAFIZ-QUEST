@@ -14,6 +14,10 @@ Lihat nama surah dalam tulisan Arab dan Latin, lalu pilih jumlah ayatnya. Satu s
 
 Pilih terjemahan bahasa Indonesia dari empat pilihan. Setiap sesi memuat 10 soal acak dari 564 ayat Juz 30. Terjemahan berasal dari edisi [id.indonesian, Al Quran Cloud](https://api.alquran.cloud/v1/juz/30/id.indonesian).
 
+## Pembuka
+
+Tombol **Mulai dengan Bacaan** memutar ta’awudz diikuti basmalah, dengan teks yang disorot sesuai bacaan. Tombol **Lewati** membuka dasbor langsung. Rekaman Mishary Alafasy diambil dari bagian pembuka [Al-Fatihah, QuranicAudio](https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/001.mp3).
+
 ## Menjalankan
 
 Buka `index.html` di browser dari folder repositori agar berkas audio juga dapat dimuat. Untuk menguji melalui server lokal, jalankan `python3 -m http.server 8000` dari folder repositori lalu buka `http://localhost:8000`.
