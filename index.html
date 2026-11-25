@@ -224,9 +224,9 @@ main { padding-bottom: 7rem; }
 }
 .mode-grid > button > p:first-of-type { font-size: .82rem; }
 .mode-grid > button > p:last-of-type { font-size: .68rem; line-height: 1.45; }
-.mode-grid > button:last-child { background: #103f34; border-color: #25584b; }
-.mode-grid > button:last-child > span { background: #ffffff20; }
-.mode-grid > button:last-child:hover { background: #165145; }
+.mode-grid > button.mode-featured { background: #103f34; border-color: #25584b; }
+.mode-grid > button.mode-featured > span { background: #ffffff20; }
+.mode-grid > button.mode-featured:hover { background: #165145; }
 .btn-gold, .btn-emerald, .word-chip { box-shadow: none; }
 .btn-gold { background: var(--gold); color: #203b2f; }
 .btn-emerald { background: #126249; }
@@ -308,6 +308,22 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       font-size: .68rem;
     }
     .audio-menu-panel button[aria-pressed="true"]::after { content: "Aktif"; color: #08734e; }
+  </style>
+  <style>
+    .mode-grid > .meaning-mode-entry {
+      grid-column: 1 / -1;
+      min-height: auto;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      column-gap: .7rem;
+    }
+    .mode-grid > .meaning-mode-entry > span { grid-row: span 2; margin: 0; }
+    .meaning-study { max-width: 48rem; margin-inline: auto; }
+    .meaning-options button { border: 1px solid #c9dfd3; min-height: 3.1rem; text-align: left; }
+    .meaning-options button:hover:not(:disabled) { background: #edf5ef; }
+    .meaning-options button[data-result="right"] { background: #e0f4e7; border-color: #43886d; }
+    .meaning-options button[data-result="wrong"] { background: #fef3db; border-color: #bc8531; }
   </style>
 </head>
 <body class="pb-24">
@@ -411,7 +427,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       <div class="mode-section">
         <div class="flex items-center justify-between mb-3">
           <h3 class="section-title">Pilih latihan</h3>
-          <span class="text-[11px] font-semibold text-[#087F5B]">8 mode</span>
+          <span class="text-[11px] font-semibold text-[#087F5B]">9 mode</span>
         </div>
 
         <div class="mode-grid grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -457,10 +473,15 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
             <p class="text-[10px] text-slate-600 mt-0.5">Dengarkan ayat, lalu sambung bergantian</p>
           </button>
 
-          <button onclick="startQuickMode('ujian_akhir', 114)" class="p-3 rounded-2xl clay-emerald text-white text-left transition hover:brightness-105 cursor-pointer">
+          <button onclick="startQuickMode('ujian_akhir', 114)" class="mode-featured p-3 rounded-2xl clay-emerald text-white text-left transition hover:brightness-105 cursor-pointer">
             <span class="text-lg block mb-1">👑</span>
             <p class="font-extrabold text-xs text-[#fef08a]">Ujian Akhir Mutqin</p>
             <p class="text-[10px] text-[#DDF5E7] mt-0.5">Uji susunan ayat surah pilihan</p>
+          </button>
+          <button onclick="openSurahMeanings()" class="meaning-mode-entry p-3 rounded-2xl text-left transition cursor-pointer">
+            <span class="text-lg block mb-1" aria-hidden="true">📚</span>
+            <p class="font-extrabold text-xs">Cocokkan Nama Surah</p>
+            <p class="text-[10px] mt-0.5">Pasangkan nama surah dengan artinya</p>
           </button>
         </div>
       </div>
@@ -501,6 +522,28 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     <!-- =========================================================
          VIEW 2: ARENA BERMAIN PUZZLE & DUEL INTERAKTIF
     ========================================================== -->
+    <section id="view-meanings" class="meaning-study hidden space-y-4" aria-labelledby="meaning-title">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <button onclick="exitGame()" class="rounded-xl bg-white border px-4 py-2 text-sm font-bold">← Peta Level</button>
+        <p id="meaning-score" class="rounded-full bg-emerald-50 px-4 py-2 text-sm font-bold text-[#064E3B]">0 benar</p>
+      </div>
+      <div class="clay-card p-5 md:p-7 space-y-4">
+        <h2 id="meaning-title" class="section-title" tabindex="-1">Cocokkan Nama Surah</h2>
+        <div id="meaning-question">
+          <div class="text-center rounded-2xl bg-[#DDF5E7] p-5">
+            <p id="meaning-progress" class="text-xs font-bold text-[#064E3B]"></p>
+            <p id="meaning-arabic" class="quran-text text-3xl text-[#064E3B]" lang="ar"></p>
+            <h3 id="meaning-name" class="text-2xl font-extrabold text-[#064E3B]" tabindex="-1"></h3>
+          </div>
+          <p class="font-semibold text-sm mt-4 mb-3">Apa arti nama surah di atas?</p>
+          <div id="meaning-options" class="meaning-options grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+        </div>
+        <p id="meaning-feedback" class="text-sm font-semibold" role="status"></p>
+        <button id="meaning-next" onclick="nextSurahMeaning()" class="hidden btn-emerald rounded-xl px-4 py-3 text-sm font-bold">Soal Berikutnya →</button>
+      </div>
+      <p class="text-xs text-slate-600">Sumber arti nama surah <a href="https://equran.id/" class="underline" rel="noopener" target="_blank">EQuran</a></p>
+    </section>
+
     <section id="view-game" class="hidden space-y-5">
       <!-- Top Bar Arena -->
       <div class="clay-card p-4 flex flex-wrap items-center justify-between gap-3">
@@ -1119,7 +1162,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       window.scrollTo(0, 0);
       document.querySelectorAll(".bottom-nav").forEach(item => item.removeAttribute("aria-current"));
       if (btn) btn.setAttribute("aria-current", "page");
-      ["home", "game", "mushaf", "teacher"].forEach(v => document.getElementById("view-" + v).classList.add("hidden"));
+      ["home", "game", "meanings", "mushaf", "teacher"].forEach(v => document.getElementById("view-" + v).classList.add("hidden"));
       document.getElementById("view-" + tab).classList.remove("hidden");
 
       document.querySelectorAll(".bottom-nav").forEach(b => {
@@ -1781,6 +1824,125 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         return;
       }
       showBanner("📋 Rapor evaluasi santri berhasil disalin! Siap ditempel ke WhatsApp/laporan guru.");
+    }
+
+    // Indonesian surah names and meanings from https://equran.id/api/v2/surat.
+    const surahMeanings = {
+      78: "Berita Besar",
+      79: "Malaikat Yang Mencabut",
+      80: "Bermuka Masam",
+      81: "Penggulungan",
+      82: "Terbelah",
+      83: "Orang-Orang Curang",
+      84: "Terbelah",
+      85: "Gugusan Bintang",
+      86: "Yang Datang Di Malam Hari",
+      87: "Maha Tinggi",
+      88: "Hari Kiamat",
+      89: "Fajar",
+      90: "Negeri",
+      91: "Matahari",
+      92: "Malam",
+      93: "Duha",
+      94: "Lapang",
+      95: "Buah Tin",
+      96: "Segumpal Darah",
+      97: "Kemuliaan",
+      98: "Bukti Nyata",
+      99: "Guncangan",
+      100: "Kuda Yang Berlari Kencang",
+      101: "Hari Kiamat",
+      102: "Bermegah-Megahan",
+      103: "Masa",
+      104: "Pengumpat",
+      105: "Gajah",
+      106: "Quraisy",
+      107: "Barang Yang Berguna",
+      108: "Pemberian Yang Banyak",
+      109: "Orang-Orang kafir",
+      110: "Pertolongan",
+      111: "Api Yang Bergejolak",
+      112: "Ikhlas",
+      113: "Subuh",
+      114: "Manusia",
+    };
+    let meaningDeck = [];
+    let meaningIndex = 0;
+    let meaningScore = 0;
+    let meaningAnswered = false;
+
+    function openSurahMeanings() {
+      switchMainTab("meanings", document.querySelectorAll(".bottom-nav")[1]);
+      meaningDeck = shuffleArray(JUZ30_LEVELS);
+      meaningIndex = 0;
+      meaningScore = 0;
+      renderSurahMeaning();
+    }
+
+    function renderSurahMeaning() {
+      meaningAnswered = false;
+      const surah = meaningDeck[meaningIndex];
+      const meaning = surahMeanings[surah.surah_id];
+      const alternatives = [...new Set(Object.values(surahMeanings))].filter(text => text !== meaning);
+      const options = shuffleArray([meaning, ...shuffleArray(alternatives).slice(0, 3)]);
+      document.getElementById("meaning-question").classList.remove("hidden");
+      document.getElementById("meaning-progress").textContent = `Soal ${meaningIndex + 1} dari ${meaningDeck.length}`;
+      document.getElementById("meaning-score").textContent = `${meaningScore} benar`;
+      document.getElementById("meaning-arabic").textContent = surah.arab;
+      const name = document.getElementById("meaning-name");
+      name.textContent = surah.name;
+      document.getElementById("meaning-feedback").textContent = "";
+      document.getElementById("meaning-next").classList.add("hidden");
+
+      const grid = document.getElementById("meaning-options");
+      grid.replaceChildren(...options.map(text => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "bg-white rounded-xl px-4 py-3 text-sm font-bold text-[#064E3B]";
+        button.textContent = text;
+        button.addEventListener("click", () => checkSurahMeaning(button, surah, meaning));
+        return button;
+      }));
+      name.focus();
+    }
+
+    function checkSurahMeaning(button, surah, meaning) {
+      if (meaningAnswered) return;
+      meaningAnswered = true;
+      const correct = button.textContent === meaning;
+      if (correct) meaningScore++;
+      document.getElementById("meaning-score").textContent = `${meaningScore} benar`;
+      document.querySelectorAll("#meaning-options button").forEach(option => {
+        option.disabled = true;
+        if (option.textContent === meaning) option.dataset.result = "right";
+        else if (option === button) option.dataset.result = "wrong";
+      });
+      document.getElementById("meaning-feedback").textContent =
+        `${correct ? "MasyaAllah, tepat!" : "Belum tepat."} Arti ${surah.name} adalah ${meaning}.`;
+      gameAudio.narrate(correct ? "correct" : "duelMiss");
+      const next = document.getElementById("meaning-next");
+      next.textContent = meaningIndex + 1 === meaningDeck.length ? "Lihat Hasil →" : "Soal Berikutnya →";
+      next.classList.remove("hidden");
+      next.focus();
+    }
+
+    function nextSurahMeaning() {
+      if (meaningIndex === meaningDeck.length) {
+        openSurahMeanings();
+        return;
+      }
+      if (!meaningAnswered) return;
+      gameAudio.stopNarration();
+      meaningIndex++;
+      if (meaningIndex < meaningDeck.length) {
+        renderSurahMeaning();
+        return;
+      }
+      document.getElementById("meaning-question").classList.add("hidden");
+      document.getElementById("meaning-feedback").textContent =
+        `Latihan selesai. Kamu mencocokkan ${meaningScore} dari ${meaningDeck.length} nama surah dengan tepat.`;
+      document.getElementById("meaning-next").textContent = "Main Lagi";
+      document.getElementById("meaning-title").focus();
     }
 
     document.addEventListener("keydown", event => {
