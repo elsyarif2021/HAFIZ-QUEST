@@ -24,6 +24,12 @@ Pilih satu dari empat jawaban. Setiap sesi memuat 10 soal acak dari 564 ayat Juz
 - Inggris: [Sahih International](https://api.alquran.cloud/v1/juz/30/en.sahih).
 - Arab: [Tafsir Al-Muyassar](https://api.alquran.cloud/v1/juz/30/ar.muyassar).
 
+## Murottal dan Murajaah Pintar
+
+Mushaf menyediakan tombol murottal Mishary Alafasy untuk setiap ayat dan tombol untuk menandai ayat yang lupa. Audio tersedia juga di puzzle yang memakai ayat, termasuk kuis arti ayat. Ujian membuka audio sesudah jawaban diperiksa. Audio untuk sebagian besar ayat membutuhkan internet.
+
+Kesalahan latihan hafalan dan penanda di Mushaf masuk ke daftar Evaluasi yang sama. Satu sesi **Murajaah Pintar** berisi hingga lima ayat yang sudah waktunya diulang. Jawaban benar pada percobaan pertama, tanpa audio atau petunjuk, menjadwalkan pengulangan setelah 1, 3, lalu 7 hari. Kesalahan membuat ayat siap diulang kembali. Catatan tersimpan di browser dan diperbarui antartab pada situs yang sama.
+
 ## Pembuka
 
 Ta’awudz dan basmalah diputar saat aplikasi dibuka apabila browser mengizinkan suara otomatis. Jika browser meminta interaksi, tekan **Mulai dengan Bacaan**. Teks disorot mengikuti bacaan. Tombol **Lewati** membuka dasbor langsung. Rekaman Mishary Alafasy diambil dari bagian pembuka [Al-Fatihah, QuranicAudio](https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/001.mp3).

@@ -467,6 +467,20 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       html[dir="rtl"] .hero-art { left: -11%; right: auto; }
     }
   </style>
+  <style>
+    .recite-button, .mark-review-button {
+      padding: .55rem .8rem;
+      border: 1px solid #c3decf;
+      border-radius: .75rem;
+      background: #edf7f0;
+      color: #064e3b;
+      font-size: .75rem;
+      font-weight: 700;
+    }
+    .recite-button[aria-pressed="true"] { background: #c4edda; }
+    .verse-row-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+    .mark-review-button { background: #fff9ea; border-color: #ead7a6; }
+  </style>
 </head>
 <body class="pb-24">
 
@@ -553,6 +567,14 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
             <div id="juz-progress-bar" class="h-full bg-gradient-to-r from-[#D4AF37] to-[#fef08a] rounded-full transition-all duration-500" style="width: 0%"></div>
           </div>
         </div>
+      </div>
+
+      <div class="clay-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 class="font-extrabold text-sm">Murajaah Pintar</h3>
+          <p id="review-home-status" class="text-xs text-slate-600 mt-1"></p>
+        </div>
+        <button type="button" onclick="startSmartReview()" class="btn-emerald rounded-xl px-4 py-2 text-sm font-bold">Latih Ayat yang Perlu Diulang</button>
       </div>
 
       <!-- TARGET MURAJAAH HARIAN (DAILY QUEST) -->
@@ -728,6 +750,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
             <p id="meaning-arabic" class="quran-text text-3xl text-[#064E3B]" lang="ar"></p>
             <h3 id="meaning-name" class="text-2xl font-extrabold text-[#064E3B]" tabindex="-1"></h3>
           </div>
+          <button id="quiz-verse-audio" type="button" class="recite-button hidden mt-3" aria-pressed="false" onclick="playQuizVerseAudio()">🔊 <span data-recitation-label>Dengarkan Ayat</span></button>
           <p id="surah-quiz-question" class="font-semibold text-sm mt-4 mb-3"></p>
           <div id="meaning-options" class="meaning-options grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
         </div>
@@ -794,7 +817,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
           <div class="flex items-center gap-2">
             <button onclick="playVerseAudio()" id="btn-audio" aria-pressed="false" class="px-3.5 py-2 rounded-xl bg-[#DDF5E7] hover:bg-[#B7D7C0] text-[#064E3B] font-bold text-xs flex items-center gap-1.5 transition cursor-pointer">
               <span>🔊</span>
-              <span id="verse-audio-label">Dengarkan Ayat</span>
+              <span id="verse-audio-label" data-recitation-label>Dengarkan Ayat</span>
             </button>
             <button onclick="useHint()" class="px-3.5 py-2 rounded-xl bg-[#FFF8E7] hover:bg-amber-100 border border-[#D4AF37]/50 text-[#92400e] font-bold text-xs flex items-center gap-1.5 transition cursor-pointer">
               <span>💡</span>
@@ -918,6 +941,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
           <button onclick="clearMistakesLog()" class="text-xs text-slate-400 hover:text-red-500 font-semibold cursor-pointer">Reset Catatan</button>
         </div>
 
+        <button type="button" onclick="startSmartReview()" class="btn-emerald rounded-xl px-4 py-2 text-sm font-bold">Latih Ayat yang Perlu Diulang</button>
         <div id="weak-verses-list" class="space-y-2.5">
         </div>
       </div>
@@ -1066,7 +1090,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     </div>
   </dialog>
 
-  <script src="assets/ui-messages.js"></script>
+  <script src="assets/ui-messages.js?v=2"></script>
   <script src="assets/interface-language.js?v=2"></script>
   <script src="assets/game-audio.js?v=3"></script>
   <script src="assets/opening.js?v=4"></script>
@@ -1183,16 +1207,62 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     let duelP2Score = 0;
     let duelTurn = 1;
     let puzzleLocked = false;
+    let puzzleAssisted = false;
+    let reviewSession = null;
     let startedAtBeginning = true;
     const recitation = new Audio();
-    recitation.addEventListener("ended", stopRecitation);
+    let recitationButton = null;
+    let recitationQueue = [];
+    let recitationRequest = 0;
+    recitation.addEventListener("ended", () => {
+      if (recitationQueue.length) void playNextRecitation();
+      else stopRecitation();
+    });
 
     function stopRecitation() {
+      recitationRequest++;
       recitation.pause();
+      recitationQueue = [];
+      if (recitationButton) {
+        recitationButton.setAttribute("aria-pressed", "false");
+        if (recitationButton.dataset.accessibleLabel) recitationButton.setAttribute("aria-label", recitationButton.dataset.accessibleLabel);
+        const label = recitationButton.querySelector("[data-recitation-label]");
+        if (label) label.textContent = recitationButton.dataset.playLabel;
+      }
+      recitationButton = null;
       gameAudio.setTilawah(false);
-      document.getElementById("btn-audio").setAttribute("aria-pressed", "false");
-      document.getElementById("verse-audio-label").textContent =
-        currentMode === "duel_1v1" ? tr("Putar Ulang Ayat Pemantik") : tr("Dengarkan Ayat");
+    }
+
+    async function playNextRecitation() {
+      const number = recitationQueue.shift();
+      const request = ++recitationRequest;
+      recitation.src = number >= 6231 && number <= 6234
+        ? `assets/audio/duel/${number}.mp3`
+        : `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${number}.mp3`;
+      try {
+        await recitation.play();
+      } catch (error) {
+        if (request !== recitationRequest) return;
+        stopRecitation();
+        showBanner(error.name === "NotAllowedError"
+          ? tr("Tekan tombol putar untuk mendengarkan ayat.")
+          : tr("Audio tilawah gagal dimuat. Ayat masih bisa dibaca di layar."));
+      }
+    }
+
+    function toggleRecitation(button, verses) {
+      if (!verses.length) return;
+      const wasPlaying = recitationButton === button;
+      stopRecitation();
+      if (wasPlaying) return;
+      recitationButton = button;
+      recitationQueue = verses.map(verse => verse.audioNumber);
+      gameAudio.setTilawah(true);
+      button.setAttribute("aria-pressed", "true");
+      if (button.dataset.accessibleLabel) button.setAttribute("aria-label", tr("Hentikan Bacaan"));
+      const label = button.querySelector("[data-recitation-label]");
+      if (label) label.textContent = tr("Hentikan Bacaan");
+      void playNextRecitation();
     }
 
     const closedDialog = document.getElementById("app-closed");
@@ -1223,6 +1293,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       applyProfileUI();
       updateTopStats();
       updateDailyQuestUI();
+      updateReviewHome();
       renderLevelsGrid(currentStage);
       populateMushafSelector();
       loadAndRenderMushaf(114);
@@ -1421,7 +1492,11 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         btn.classList.add("text-[#087F5B]", "font-extrabold");
       }
       if (tab === "teacher") renderTeacherDashboard();
-      if (tab === "home") updateDailyQuestUI();
+      if (tab === "home") {
+        updateDailyQuestUI();
+        updateReviewHome();
+      }
+      if (tab !== "game") reviewSession = null;
     }
 
     function exitGame() {
@@ -1451,13 +1526,16 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       startQuickMode("duel_1v1", surahId, 0);
     }
 
-    function startQuickMode(mode, surahId, specificVerseIdx = 0) {
+    function startQuickMode(mode, surahId, specificVerseIdx = 0, reviewing = false) {
       if (!quranCache[surahId]?.[specificVerseIdx]) return;
-      startedAtBeginning = specificVerseIdx === 0;
+      if (!reviewing) reviewSession = null;
+      startedAtBeginning = !reviewing && specificVerseIdx === 0;
       currentMode = mode;
       currentSurahId = surahId;
       currentVerseIdx = specificVerseIdx;
-      document.getElementById("in-game-mode-select").value = mode;
+      const selector = document.getElementById("in-game-mode-select");
+      selector.value = mode;
+      selector.disabled = reviewing;
 
       switchMainTab("game", document.querySelectorAll(".bottom-nav")[1]);
 
@@ -1491,13 +1569,18 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       return Math.floor((activeVersesList.length - 1) / 2) * 2;
     }
 
-    function setupPuzzleStage() {
+    function setupPuzzleStage(resetting = false) {
       gameAudio.stopNarration();
       stopRecitation();
       puzzleLocked = false;
+      if (!resetting) puzzleAssisted = false;
       const competitive = ["ujian_akhir", "duel_1v1"].includes(currentMode);
       document.querySelector('[onclick="useHint()"]').disabled = competitive;
-      document.getElementById("btn-audio").disabled = currentMode === "ujian_akhir";
+      const audioButton = document.getElementById("btn-audio");
+      audioButton.disabled = currentMode === "ujian_akhir";
+      audioButton.dataset.playLabel = currentMode === "duel_1v1"
+        ? tr("Putar Ulang Ayat Pemantik") : tr("Dengarkan Ayat");
+      document.getElementById("verse-audio-label").textContent = audioButton.dataset.playLabel;
       document.querySelector('[onclick="resetCurrentPuzzle()"]').disabled = false;
       document.getElementById("btn-next-verse").textContent = tr("Lanjut →");
       const verses = activeVersesList;
@@ -1634,6 +1717,11 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         poolSequence = shuffleArray(expectedSequence);
       }
 
+      if (reviewSession) {
+        document.getElementById("game-mode-badge").textContent = tr("Murajaah Pintar");
+        document.getElementById("puzzle-step-indicator").textContent =
+          tr`Ayat ${reviewSession.index + 1} dari ${reviewSession.items.length}`;
+      }
       renderPuzzleZones();
       if (currentMode === "duel_1v1") void playVerseAudio();
     }
@@ -1744,7 +1832,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     }
 
     function resetCurrentPuzzle() {
-      if (!puzzleLocked) setupPuzzleStage();
+      if (!puzzleLocked) setupPuzzleStage(true);
     }
 
     function useHint() {
@@ -1757,35 +1845,24 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       const nextExpected = expectedSequence[placedSequence.length];
       const foundIdx = poolSequence.findIndex(item => item.id === nextExpected.id);
       if (foundIdx !== -1) {
+        puzzleAssisted = true;
         addToAnswer(foundIdx);
       }
     }
 
-    async function playVerseAudio() {
-      const verse = activeVersesList[currentVerseIdx];
-      const isDuel = currentMode === "duel_1v1";
-      if (!verse || currentMode === "ujian_akhir" || (isDuel && puzzleLocked)) return;
-      if (!recitation.paused) {
-        stopRecitation();
-        return;
-      }
-      recitation.src = isDuel && currentSurahId === 114
-        ? `assets/audio/duel/${verse.audioNumber}.mp3`
-        : `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${verse.audioNumber}.mp3`;
+    function playVerseAudio() {
       const button = document.getElementById("btn-audio");
-      gameAudio.setTilawah(true);
-      button.setAttribute("aria-pressed", "true");
-      document.getElementById("verse-audio-label").textContent = tr("Hentikan Bacaan");
-      try {
-        await recitation.play();
-      } catch (error) {
-        if (error.name !== "AbortError") {
-          stopRecitation();
-          showBanner(error.name === "NotAllowedError"
-            ? tr("Tekan tombol putar untuk mendengarkan ayat.")
-            : tr("Audio tilawah gagal dimuat. Ayat masih bisa dibaca di layar."));
-        }
-      }
+      if (button.disabled) return;
+      if (!puzzleLocked && currentMode !== "duel_1v1") puzzleAssisted = true;
+      const verses = currentMode === "urut_ayat"
+        ? activeVersesList.slice(currentVerseIdx, currentVerseIdx + 6)
+        : activeVersesList.slice(currentVerseIdx, currentVerseIdx + 1);
+      toggleRecitation(button, verses);
+    }
+
+    function playQuizVerseAudio() {
+      const verse = surahQuizDeck[surahQuizIndex]?.verse;
+      if (verse) toggleRecitation(document.getElementById("quiz-verse-audio"), [verse]);
     }
 
     function checkPuzzleAnswer() {
@@ -1822,6 +1899,20 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
       feedbackBox.classList.remove("hidden");
 
+      if (currentMode !== "tebak_surah") {
+        const verseIndices = currentMode === "urut_ayat"
+          ? expectedSequence.map((_, offset) => currentVerseIdx + offset) : [submittedVerseIdx];
+        if (!isCorrect || !puzzleAssisted) {
+          const affected = isCorrect || currentMode !== "urut_ayat" ? verseIndices
+            : verseIndices.filter((_, offset) => expectedSequence[offset].text !== placedSequence[offset].text);
+          updateReviewVerses(currentSurahId, affected, isCorrect ? "correct" : "mistake");
+        }
+      }
+      if (!isCorrect) {
+        puzzleAssisted = true;
+        if (currentMode === "ujian_akhir") document.getElementById("btn-audio").disabled = false;
+      }
+
       if (isCorrect) {
         totalCorrect++;
         localStorage.setItem("hq_correct", totalCorrect);
@@ -1842,25 +1933,6 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         feedbackVerse.textContent = currentMode === "urut_ayat" ? "" : activeVersesList[submittedVerseIdx].text;
         lockPuzzle();
       } else {
-        const surahInfo = JUZ30_LEVELS.find(l => l.surah_id === currentSurahId);
-        const currentV = activeVersesList[submittedVerseIdx];
-        const key = `${currentSurahId}_${currentV.verse_number}`;
-        const existing = weakVerses.find(w => w.key === key);
-        if (existing) {
-          existing.mistakes += 1;
-        } else {
-          weakVerses.unshift({
-            key,
-            surah_id: currentSurahId,
-            surah_name: surahInfo.name,
-            verse_number: currentV.verse_number,
-            verse_idx: submittedVerseIdx,
-            text: currentV.text,
-            mistakes: 1
-          });
-        }
-        localStorage.setItem("hq_weak_verses", JSON.stringify(weakVerses));
-
         feedbackBox.className = "mt-5 p-4 rounded-2xl bg-amber-50 border border-amber-400 text-center";
         feedbackTitle.className = "font-extrabold text-sm text-amber-800";
         feedbackTitle.textContent = tr("Belum tepat. Periksa kembali pilihanmu.");
@@ -1870,7 +1942,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
     function lockPuzzle() {
       puzzleLocked = true;
-      if (currentMode === "duel_1v1") document.getElementById("btn-audio").disabled = true;
+      document.getElementById("btn-audio").disabled = false;
       document.querySelectorAll("#answer-zone button, #pool-zone button, [onclick='useHint()'], [onclick='resetCurrentPuzzle()']").forEach(button => {
         button.disabled = true;
       });
@@ -1882,6 +1954,15 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
     function nextPuzzleStep() {
       if (!puzzleLocked) return;
+      if (reviewSession) {
+        reviewSession.index++;
+        if (reviewSession.index < reviewSession.items.length) startReviewVerse();
+        else {
+          exitGame();
+          showBanner(tr("Sesi Murajaah Pintar selesai. Lihat jadwal berikutnya di Evaluasi."));
+        }
+        return;
+      }
       const verses = activeVersesList;
       let nextIdx = currentVerseIdx + 1;
 
@@ -1935,6 +2016,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     }
 
     function loadAndRenderMushaf(surahId) {
+      stopRecitation();
       const container = document.getElementById("mushaf-verses-container");
       container.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">${tr`Memuat teks Uthmani terverifikasi...`}</p>`;
 
@@ -1954,7 +2036,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
       verses.forEach(v => {
         const row = document.createElement("div");
-        row.className = "p-4 rounded-2xl bg-[#FFF8E7] border border-[#D4AF37]/30 flex items-center justify-between gap-4";
+        row.className = "p-4 rounded-2xl bg-[#FFF8E7] border border-[#D4AF37]/30";
         row.innerHTML = `
           <span class="w-8 h-8 rounded-full bg-[#087F5B] text-white font-bold text-xs flex items-center justify-center shrink-0">
             ${v.verse_number}
@@ -1963,19 +2045,126 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
             ${v.text}
           </p>
         `;
+        row.querySelector("span").classList.add("inline-flex");
+        row.querySelector(".quran-text").lang = "ar";
+        const controls = document.createElement("div");
+        controls.className = "verse-row-controls";
+        const listen = document.createElement("button");
+        listen.type = "button";
+        listen.className = "recite-button";
+        listen.dataset.playLabel = tr("Dengarkan Ayat");
+        listen.innerHTML = '🔊 <span data-recitation-label></span>';
+        listen.querySelector("span").textContent = listen.dataset.playLabel;
+        listen.setAttribute("aria-pressed", "false");
+        listen.setAttribute("aria-label", tr`Dengarkan ayat ${v.verse_number}`);
+        listen.dataset.accessibleLabel = listen.getAttribute("aria-label");
+        listen.addEventListener("click", () => toggleRecitation(listen, [v]));
+        const mark = document.createElement("button");
+        mark.type = "button";
+        mark.className = "mark-review-button";
+        mark.textContent = tr("Tandai untuk Murajaah");
+        mark.addEventListener("click", () => {
+          updateReviewVerses(surahId, [v.verse_number - 1], "mark");
+          showBanner(tr("Ayat ditambahkan ke Murajaah Pintar."));
+        });
+        controls.append(listen, mark);
+        row.appendChild(controls);
         container.appendChild(row);
       });
     }
+
+    function updateReviewVerses(surahId, indices, result) {
+      const surah = JUZ30_LEVELS.find(item => item.surah_id === surahId);
+      const now = Date.now();
+      weakVerses = readSaved("hq_weak_verses", []);
+      let changed = false;
+      for (const index of indices) {
+        const verse = quranCache[surahId]?.[index];
+        if (!surah || !verse) continue;
+        const key = `${surahId}_${verse.verse_number}`;
+        let record = weakVerses.find(item => item?.key === key);
+        if (result === "correct") {
+          if (!record || (record.dueAt ?? 0) > now) continue;
+          const streak = Math.min((record.cleanReviews || 0) + 1, 3);
+          const due = new Date(now);
+          due.setDate(due.getDate() + [1, 3, 7][streak - 1]);
+          due.setHours(0, 0, 0, 0);
+          record.cleanReviews = streak;
+          record.dueAt = due.getTime();
+        } else {
+          if (!record) {
+            record = {
+              key, surah_id: surahId, surah_name: surah.name, verse_number: verse.verse_number,
+              verse_idx: index, text: verse.text, mistakes: 0
+            };
+            weakVerses.unshift(record);
+          }
+          if (result === "mistake") record.mistakes++;
+          record.cleanReviews = 0;
+          record.dueAt = now;
+        }
+        changed = true;
+      }
+      if (changed) localStorage.setItem("hq_weak_verses", JSON.stringify(weakVerses));
+      updateReviewHome();
+    }
+
+    function dueReviewVerses(now = Date.now()) {
+      return weakVerses.filter(item => item && quranCache[item.surah_id]?.[item.verse_idx]
+        && (item.dueAt ?? 0) <= now)
+        .sort((a, b) => b.mistakes - a.mistakes || (a.dueAt ?? 0) - (b.dueAt ?? 0));
+    }
+
+    function updateReviewHome() {
+      document.getElementById("review-home-status").textContent =
+        tr`${dueReviewVerses().length} ayat siap diulang`;
+    }
+
+    function startSmartReview() {
+      weakVerses = readSaved("hq_weak_verses", []);
+      const items = dueReviewVerses().slice(0, 5);
+      if (!items.length) {
+        showBanner(tr("Belum ada ayat yang jatuh tempo untuk murajaah."));
+        return;
+      }
+      reviewSession = { items, index: 0 };
+      startReviewVerse();
+    }
+
+    function startReviewVerse() {
+      const item = reviewSession.items[reviewSession.index];
+      startQuickMode("susun_kata", item.surah_id, item.verse_idx, true);
+    }
+
+    function reviewSingleVerse(surahId, index) {
+      if (!quranCache[surahId]?.[index]) return;
+      reviewSession = { items: [{ surah_id: surahId, verse_idx: index }], index: 0 };
+      startReviewVerse();
+    }
+
+    function reviewStatus(record, now = Date.now()) {
+      return (record.dueAt ?? 0) <= now
+        ? tr("Siap diulang")
+        : tr`Ulangi lagi: ${new Date(record.dueAt).toLocaleDateString(interfaceLanguage)}`;
+    }
+
+    window.addEventListener("storage", event => {
+      if (event.key !== "hq_weak_verses" && event.key !== null) return;
+      weakVerses = readSaved("hq_weak_verses", []);
+      updateReviewHome();
+      if (!document.getElementById("view-teacher").classList.contains("hidden")) renderTeacherDashboard();
+    });
 
     /* =========================================================================
        07. DASHBOARD EVALUASI SANTRI & GURU TAHFIZ
     ========================================================================= */
     function renderTeacherDashboard() {
+      weakVerses = readSaved("hq_weak_verses", []);
       const acc = totalAttempts === 0 ? 0 : Math.round((totalCorrect / totalAttempts) * 100);
       document.getElementById("stat-accuracy").textContent = `${acc}%`;
       document.getElementById("stat-attempts").textContent = totalAttempts;
       document.getElementById("stat-surahs").textContent = `${completedSurahs.length} / 37`;
-      document.getElementById("stat-weak-count").textContent = tr`${weakVerses.length} Ayat`;
+      document.getElementById("stat-weak-count").textContent = tr`${dueReviewVerses().length} Ayat`;
 
       const badges = [
         { icon: "🌱", name: tr("Langkah Awal"), desc: tr("Kumpulkan 50 XP"), unlocked: userXP >= 50 },
@@ -2021,11 +2210,12 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
           <div>
             <div class="flex items-center gap-2">
               <span class="text-xs font-extrabold text-[#064E3B]">${tr`Surah ${w.surah_name} • Ayat ${w.verse_number}`}</span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900">${tr`${w.mistakes}x Keliru`}</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900">${w.mistakes ? tr`${w.mistakes}x Keliru` : tr("Ditandai untuk murajaah")}</span>
             </div>
-            <p class="quran-text text-xl text-[#064E3B] mt-1 text-right sm:text-left">${w.text}</p>
+            <p class="text-xs text-slate-600 mt-1">${reviewStatus(w)}</p>
+            <p lang="ar" class="quran-text text-xl text-[#064E3B] mt-1 text-right sm:text-left">${w.text}</p>
           </div>
-          <button onclick="startQuickMode('susun_kata', ${w.surah_id}, ${w.verse_idx})" class="btn-emerald px-3.5 py-2 rounded-xl font-bold text-xs shrink-0 cursor-pointer">
+          <button onclick="reviewSingleVerse(${w.surah_id}, ${w.verse_idx})" class="btn-emerald px-3.5 py-2 rounded-xl font-bold text-xs shrink-0 cursor-pointer">
             ${tr`Latih Ulang →`}
           </button>
         `;
@@ -2037,10 +2227,12 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       weakVerses = [];
       localStorage.setItem("hq_weak_verses", "[]");
       renderTeacherDashboard();
+      updateReviewHome();
       showBanner(tr("ℹ️ Catatan evaluasi ayat berhasil direset."));
     }
 
     function exportTeacherReport() {
+      weakVerses = readSaved("hq_weak_verses", []);
       const acc = totalAttempts === 0 ? 0 : Math.round((totalCorrect / totalAttempts) * 100);
       let report = tr`LAPORAN EVALUASI TAHFIZ — Hafiz Quest (JUZ 30)\n`;
       report += tr`Nama Santri: ${santriProfile.name}\n`;
@@ -2054,7 +2246,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         report += tr`- Belum ada catatan kesalahan\n`;
       } else {
         weakVerses.forEach(w => {
-          report += tr`- Surah ${w.surah_name} Ayat ${w.verse_number} (${w.mistakes}x keliru)\n`;
+          report += tr`- Surah ${w.surah_name} Ayat ${w.verse_number} (${w.mistakes}x keliru) · ${reviewStatus(w)}\n`;
         });
       }
 
@@ -2179,6 +2371,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
     function renderSurahQuizQuestion() {
       surahQuizAnswered = false;
+      stopRecitation();
       const surah = surahQuizDeck[surahQuizIndex];
       const quiz = surahQuizModes[surahQuizMode];
       const answer = quiz.answer(surah);
@@ -2189,6 +2382,9 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       document.getElementById("meaning-progress").textContent = tr`Soal ${surahQuizIndex + 1} dari ${surahQuizDeck.length}`;
       document.getElementById("meaning-score").textContent = tr`${surahQuizScore} benar`;
       document.getElementById("meaning-arabic").textContent = surah.verse?.text ?? surah.arab;
+      const quizAudio = document.getElementById("quiz-verse-audio");
+      quizAudio.dataset.playLabel = tr("Dengarkan Ayat");
+      quizAudio.classList.toggle("hidden", !surah.verse);
       const name = document.getElementById("meaning-name");
       name.textContent = surah.verse ? tr`${surah.name} · Ayat ${surah.verse.verse_number}` : surah.name;
       name.classList.toggle("text-sm", Boolean(surah.verse));
@@ -2221,6 +2417,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       });
       document.getElementById("meaning-feedback").textContent =
         `${correct ? tr("MasyaAllah, tepat!") : tr("Belum tepat.")} ${surahQuizModes[surahQuizMode].explanation(surah, answer)}`;
+      stopRecitation();
       gameAudio.narrate(correct ? "correct" : "duelMiss");
       const next = document.getElementById("meaning-next");
       next.textContent = surahQuizIndex + 1 === surahQuizDeck.length ? tr("Lihat Hasil →") : tr("Soal Berikutnya →");
@@ -2235,6 +2432,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       }
       if (!surahQuizAnswered) return;
       gameAudio.stopNarration();
+      stopRecitation();
       surahQuizIndex++;
       if (surahQuizIndex < surahQuizDeck.length) {
         renderSurahQuizQuestion();

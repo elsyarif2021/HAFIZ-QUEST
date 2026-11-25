@@ -311,7 +311,18 @@ const interfaceMessages = {
     "🔗 Mode 4: Sambung Ayat": "🔗 Mode 4: Connect Verse",
     "🕌 Tahap 2: Desa Cahaya (11–20)": "🕌 Stage 2: Village of Light (11–20)",
     "🛡️ Mode 5: Ayat Serupa": "🛡️ Mode 5: Similar Verses",
-    "🧩 Mode 1: Susun Ayat": "🧩 Mode 1: Arrange Verses"
+    "🧩 Mode 1: Susun Ayat": "🧩 Mode 1: Arrange Verses",
+    "Murajaah Pintar": "Smart Review",
+    "Latih Ayat yang Perlu Diulang": "Practice Verses Due for Review",
+    "QQ0QQ ayat siap diulang": "QQ0QQ verses due for review",
+    "Dengarkan ayat QQ0QQ": "Listen to verse QQ0QQ",
+    "Tandai untuk Murajaah": "Mark for Review",
+    "Ayat ditambahkan ke Murajaah Pintar.": "Verse added to Smart Review.",
+    "Siap diulang": "Due for review",
+    "Ulangi lagi: QQ0QQ": "Next review: QQ0QQ",
+    "Belum ada ayat yang jatuh tempo untuk murajaah.": "No verses are due for review.",
+    "Sesi Murajaah Pintar selesai. Lihat jadwal berikutnya di Evaluasi.": "Smart Review session complete. See your next review dates in Progress Report.",
+    "Ditandai untuk murajaah": "Marked for review"
   },
   "ar": {
     "+30 XP": "+30 XP",
@@ -624,6 +635,17 @@ const interfaceMessages = {
     "🔗 Mode 4: Sambung Ayat": "🔗 الوضع 4: ربط الآية",
     "🕌 Tahap 2: Desa Cahaya (11–20)": "🕌 المرحلة الثانية: قرية النور (11-20)",
     "🛡️ Mode 5: Ayat Serupa": "🛡️ الوضع الخامس: آيات متشابهة",
-    "🧩 Mode 1: Susun Ayat": "🧩 الوضع 1: ترتيب الآيات"
+    "🧩 Mode 1: Susun Ayat": "🧩 الوضع 1: ترتيب الآيات",
+    "Murajaah Pintar": "المراجعة الذكية",
+    "Latih Ayat yang Perlu Diulang": "تدرّب على الآيات التي تحتاج إلى مراجعة",
+    "QQ0QQ ayat siap diulang": "عدد الآيات الجاهزة للمراجعة: QQ0QQ",
+    "Dengarkan ayat QQ0QQ": "استمع إلى الآية QQ0QQ",
+    "Tandai untuk Murajaah": "أضف إلى المراجعة",
+    "Ayat ditambahkan ke Murajaah Pintar.": "أُضيفت الآية إلى المراجعة الذكية.",
+    "Siap diulang": "جاهزة للمراجعة",
+    "Ulangi lagi: QQ0QQ": "المراجعة التالية: QQ0QQ",
+    "Belum ada ayat yang jatuh tempo untuk murajaah.": "لا توجد آيات حان موعد مراجعتها.",
+    "Sesi Murajaah Pintar selesai. Lihat jadwal berikutnya di Evaluasi.": "انتهت جلسة المراجعة الذكية. راجع مواعيد المراجعة التالية في صفحة التقييم.",
+    "Ditandai untuk murajaah": "معلَّمة للمراجعة"
   }
 };
