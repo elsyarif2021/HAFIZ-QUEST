@@ -454,7 +454,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
           <button onclick="startDuelMode(114)" class="p-3 rounded-2xl bg-sky-50 hover:bg-sky-100/80 border border-sky-200 text-left transition cursor-pointer">
             <span class="text-lg block mb-1">⚔️</span>
             <p class="font-bold text-xs text-[#064E3B]">Duel Cerdas Cermat</p>
-            <p class="text-[10px] text-slate-600 mt-0.5">Tantangan sambung ayat cepat 1v1</p>
+            <p class="text-[10px] text-slate-600 mt-0.5">Dengarkan ayat, lalu sambung bergantian</p>
           </button>
 
           <button onclick="startQuickMode('ujian_akhir', 114)" class="p-3 rounded-2xl clay-emerald text-white text-left transition hover:brightness-105 cursor-pointer">
@@ -557,7 +557,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
           <div class="flex items-center gap-2">
             <button onclick="playVerseAudio()" id="btn-audio" aria-pressed="false" class="px-3.5 py-2 rounded-xl bg-[#DDF5E7] hover:bg-[#B7D7C0] text-[#064E3B] font-bold text-xs flex items-center gap-1.5 transition cursor-pointer">
               <span>🔊</span>
-              <span>Dengarkan Ayat</span>
+              <span id="verse-audio-label">Dengarkan Ayat</span>
             </button>
             <button onclick="useHint()" class="px-3.5 py-2 rounded-xl bg-[#FFF8E7] hover:bg-amber-100 border border-[#D4AF37]/50 text-[#92400e] font-bold text-xs flex items-center gap-1.5 transition cursor-pointer">
               <span>💡</span>
@@ -914,6 +914,8 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       recitation.pause();
       gameAudio.setTilawah(false);
       document.getElementById("btn-audio").setAttribute("aria-pressed", "false");
+      document.getElementById("verse-audio-label").textContent =
+        currentMode === "duel_1v1" ? "Putar Ulang Ayat Pemantik" : "Dengarkan Ayat";
     }
 
     function showBanner(msg) {
@@ -1205,7 +1207,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       puzzleLocked = false;
       const competitive = ["ujian_akhir", "duel_1v1"].includes(currentMode);
       document.querySelector('[onclick="useHint()"]').disabled = competitive;
-      document.getElementById("btn-audio").disabled = competitive;
+      document.getElementById("btn-audio").disabled = currentMode === "ujian_akhir";
       document.querySelector('[onclick="resetCurrentPuzzle()"]').disabled = false;
       document.getElementById("btn-next-verse").textContent = "Lanjut →";
       const verses = activeVersesList;
@@ -1286,7 +1288,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         document.getElementById("game-surah-title").textContent = `Surah ${surahInfo.name} • Lanjutan Ayat ${promptVerse.verse_number}`;
         document.getElementById("puzzle-step-indicator").textContent = `Ronde ${idx + 1} dari ${currentMode === "duel_1v1" ? duelRoundCount() : verses.length - 1}`;
         document.getElementById("puzzle-instruction").innerHTML = currentMode === "duel_1v1"
-          ? `<strong>Pemain ${duelTurn}</strong>, pilih ayat lanjutan yang tepat untuk meraih +10 Poin Duel!`
+          ? `<strong>Pemain ${duelTurn}</strong>, dengarkan ayat pemantik, lalu pilih ayat lanjutannya untuk meraih 10 poin.`
           : `Perhatikan ayat berikut, lalu pilih <strong>ayat lanjutannya</strong>:`;
 
         expectedSequence = [{ id: `next_${idx + 1}`, text: nextVerse.text, fullWidth: true }];
@@ -1343,6 +1345,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       }
 
       renderPuzzleZones();
+      if (currentMode === "duel_1v1") void playVerseAudio();
     }
 
     function renderPuzzleZones() {
@@ -1470,21 +1473,27 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
     async function playVerseAudio() {
       const verse = activeVersesList[currentVerseIdx];
-      if (!verse || ["ujian_akhir", "duel_1v1"].includes(currentMode)) return;
+      const isDuel = currentMode === "duel_1v1";
+      if (!verse || currentMode === "ujian_akhir" || (isDuel && puzzleLocked)) return;
       if (!recitation.paused) {
         stopRecitation();
         return;
       }
-      recitation.src = `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${verse.audioNumber}.mp3`;
+      recitation.src = isDuel && currentSurahId === 114
+        ? `assets/audio/duel/${verse.audioNumber}.mp3`
+        : `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${verse.audioNumber}.mp3`;
       const button = document.getElementById("btn-audio");
       gameAudio.setTilawah(true);
+      button.setAttribute("aria-pressed", "true");
+      document.getElementById("verse-audio-label").textContent = "Hentikan Bacaan";
       try {
         await recitation.play();
-        button.setAttribute("aria-pressed", "true");
       } catch (error) {
         if (error.name !== "AbortError") {
           stopRecitation();
-          showBanner("Audio tilawah gagal dimuat. Periksa koneksi internet.");
+          showBanner(error.name === "NotAllowedError"
+            ? "Tekan tombol putar untuk mendengarkan ayat."
+            : "Audio tilawah gagal dimuat. Ayat masih bisa dibaca di layar.");
         }
       }
     }
@@ -1501,6 +1510,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
       const isCorrect = placedSequence.every((item, idx) => item.text === expectedSequence[idx].text);
       const isDuel = currentMode === "duel_1v1";
+      stopRecitation();
       gameAudio.narrate(isCorrect ? "correct" : isDuel ? "duelMiss" : "retry");
       const submittedVerseIdx = ["sambung_ayat", "duel_1v1"].includes(currentMode) ? currentVerseIdx + 1 : currentVerseIdx;
       if (isDuel) {
@@ -1570,6 +1580,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
     function lockPuzzle() {
       puzzleLocked = true;
+      if (currentMode === "duel_1v1") document.getElementById("btn-audio").disabled = true;
       document.querySelectorAll("#answer-zone button, #pool-zone button, [onclick='useHint()'], [onclick='resetCurrentPuzzle()']").forEach(button => {
         button.disabled = true;
       });

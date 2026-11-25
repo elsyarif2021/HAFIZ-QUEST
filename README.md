@@ -6,9 +6,9 @@ Game latihan tahfiz Juz 30 dalam bahasa Indonesia. Tersedia 37 surah, 564 ayat, 
 
 Buka `index.html` di browser dari folder repositori agar berkas audio juga dapat dimuat. Untuk menguji melalui server lokal, jalankan `python3 -m http.server 8000` dari folder repositori lalu buka `http://localhost:8000`.
 
-Teks, gaya, dan font sudah ada di dalam HTML. Musik dan klip narator disertakan di `assets/audio/`. Audio tilawah Mishary Alafasy memerlukan koneksi internet.
+Teks, gaya, dan font sudah ada di dalam HTML. Musik dan klip narator disertakan di `assets/audio/`. Audio ayat pemantik Duel An-Nas disertakan bersama game. Tilawah untuk surah lain dimuat dari Islamic Network dan memerlukan koneksi internet.
 
-Buka menu **♫** untuk mengatur musik dan narator secara terpisah. Musik dimatikan secara default dan dijeda saat narasi, tilawah, atau tampilan Mushaf aktif. Narator aktif secara default dan memberi komentar berbahasa Indonesia setelah jawaban diperiksa.
+Buka menu **♫** untuk mengatur musik dan narator secara terpisah. Musik dimatikan secara default dan dijeda saat narasi, tilawah, atau tampilan Mushaf aktif. Narator aktif secara default dan memberi komentar berbahasa Indonesia setelah jawaban diperiksa. Dalam Duel, bacaan ayat pemantik diputar saat ronde dimulai. Pemain dapat memutarnya ulang sebelum memilih ayat lanjutan.
 
 ## Hosting di Vercel
 
