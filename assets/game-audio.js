@@ -23,9 +23,10 @@ const gameAudio = (() => {
   let narrationOn = savedPreference("hq_narrator", "on") === "on";
   let mushafOpen = false;
   let tilawahPlaying = false;
+  let appSuspended = false;
 
   function updateMusic() {
-    if (!musicOn || mushafOpen || tilawahPlaying || !narrator.paused || document.hidden) {
+    if (appSuspended || !musicOn || mushafOpen || tilawahPlaying || !narrator.paused || document.hidden) {
       background.pause();
       return;
     }
@@ -56,7 +57,7 @@ const gameAudio = (() => {
   }
 
   function narrate(result) {
-    if (!narrationOn || tilawahPlaying || document.hidden) return;
+    if (appSuspended || !narrationOn || tilawahPlaying || document.hidden) return;
     narrator.pause();
     background.pause();
     narrator.src = `assets/audio/${clips[result]}.mp3`;
@@ -72,6 +73,12 @@ const gameAudio = (() => {
   function changeView(tab) {
     narrator.pause();
     mushafOpen = tab === "mushaf";
+    updateMusic();
+  }
+
+  function setAppSuspended(suspended) {
+    appSuspended = suspended;
+    if (suspended) narrator.pause();
     updateMusic();
   }
 
@@ -98,5 +105,5 @@ const gameAudio = (() => {
   document.addEventListener("click", updateMusic, { once: true });
   syncControls();
 
-  return { toggle, narrate, setTilawah, changeView, stopNarration };
+  return { toggle, narrate, setTilawah, changeView, stopNarration, setAppSuspended };
 })();

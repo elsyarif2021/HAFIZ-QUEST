@@ -330,6 +330,49 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     .meaning-options button[data-result="right"] { background: #e0f4e7; border-color: #43886d; }
     .meaning-options button[data-result="wrong"] { background: #fef3db; border-color: #bc8531; }
   </style>
+  <style>
+    .close-app-button {
+      display: grid;
+      place-items: center;
+      flex: none;
+      width: 40px;
+      height: 40px;
+      border: 1px solid #dce9df;
+      border-radius: 50%;
+      background: #fff;
+      color: #17483c;
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+    .close-app-button:hover { background: #f8eee8; color: #763d28; }
+    #app-closed[open] {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      margin: 0;
+      padding: 1rem;
+      background: #faf9f4;
+      color: #15382f;
+    }
+    @media (max-width: 400px) {
+      .brand-juz { display: none; }
+      .header-actions { gap: .3rem; flex-shrink: 0; }
+      .header-actions #header-xp { white-space: nowrap; }
+      .header-actions .close-app-button { width: 36px; height: 36px; }
+    }
+    @media (max-width: 360px) {
+      header > div { gap: .35rem; }
+      header h1 { font-size: 1rem; }
+      header .brand-logo { width: 2rem; height: 2rem; }
+      .header-actions .audio-menu summary { min-width: 34px; min-height: 34px; }
+      .header-actions > button:not(.close-app-button), .header-actions > div { padding-inline: .4rem; }
+    }
+  </style>
 </head>
 <body class="pb-24">
 
@@ -337,7 +380,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
   <header class="sticky top-0 z-30 bg-[#FFF8E7]/95 backdrop-blur-md border-b border-[#D4AF37]/30 px-4 py-3">
     <div class="max-w-4xl mx-auto flex items-center justify-between gap-3">
       <div class="flex items-center gap-2.5">
-        <div class="w-10 h-10 rounded-xl clay-emerald flex items-center justify-center shrink-0">
+        <div class="brand-logo w-10 h-10 rounded-xl clay-emerald flex items-center justify-center shrink-0">
           <svg class="w-6 h-6 text-[#D4AF37]" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2L14.5 5H9.5L12 2ZM7 7H17L19 11V17L15 21H9L5 17V11L7 7ZM12 10C10.34 10 9 11.34 9 13C9 14.66 10.34 16 12 16C13.66 16 15 14.66 15 13C15 11.34 13.66 10 12 10Z"/>
           </svg>
@@ -345,14 +388,14 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
         <div>
           <div class="flex items-center gap-2">
             <h1 class="font-extrabold text-lg text-[#064E3B] tracking-tight leading-none">Hafiz Quest</h1>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#DDF5E7] text-[#087F5B] border border-[#B7D7C0]">JUZ 30</span>
+            <span class="brand-juz text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#DDF5E7] text-[#087F5B] border border-[#B7D7C0]">JUZ 30</span>
           </div>
           <p class="text-[11px] text-slate-500 mt-0.5">Ruang belajar tahfiz</p>
         </div>
       </div>
 
       <!-- Status Dataset & XP -->
-      <div class="flex items-center gap-2">
+      <div class="header-actions flex items-center gap-2">
         <details class="audio-menu">
           <summary aria-label="Pengaturan audio" title="Pengaturan audio">
             <span aria-hidden="true">♫</span>
@@ -370,6 +413,9 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
           <span class="text-amber-500 text-sm">⭐</span>
           <span id="header-xp" class="text-xs font-extrabold text-[#064E3B]">0 XP</span>
         </div>
+        <button type="button" class="close-app-button" onclick="closeApp()" aria-label="Tutup aplikasi" title="Tutup aplikasi">
+          <span aria-hidden="true">×</span>
+        </button>
       </div>
     </div>
   </header>
@@ -853,6 +899,14 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     </div>
   </nav>
 
+  <dialog id="app-closed" aria-labelledby="app-closed-title">
+    <div class="clay-card p-7 text-center space-y-4">
+      <h2 id="app-closed-title" class="section-title">Hafiz Quest ditutup</h2>
+      <button type="button" class="btn-emerald rounded-xl px-5 py-3 text-sm font-bold" autofocus
+        onclick="document.getElementById('app-closed').close()">Buka Kembali</button>
+    </div>
+  </dialog>
+
   <script src="assets/game-audio.js"></script>
   <script src="assets/juz30-translation.js"></script>
   <script>
@@ -977,6 +1031,21 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       document.getElementById("verse-audio-label").textContent =
         currentMode === "duel_1v1" ? "Putar Ulang Ayat Pemantik" : "Dengarkan Ayat";
     }
+
+    const closedDialog = document.getElementById("app-closed");
+
+    function closeApp() {
+      if (closedDialog.open) return;
+      gameAudio.setAppSuspended(true);
+      stopRecitation();
+      closedDialog.showModal();
+      if (window.opener) window.close();
+    }
+
+    closedDialog.addEventListener("close", () => {
+      gameAudio.setAppSuspended(false);
+      document.querySelector(".close-app-button").focus({ preventScroll: true });
+    });
 
     function showBanner(msg) {
       const el = document.getElementById("toast-banner");
