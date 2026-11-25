@@ -4,9 +4,11 @@ Game latihan tahfiz Juz 30 dalam bahasa Indonesia. Tersedia 37 surah, 564 ayat, 
 
 ## Menjalankan
 
-Buka `index.html` di browser. Untuk menguji melalui server lokal, jalankan `python3 -m http.server 8000` dari folder repositori lalu buka `http://localhost:8000`.
+Buka `index.html` di browser dari folder repositori agar berkas audio juga dapat dimuat. Untuk menguji melalui server lokal, jalankan `python3 -m http.server 8000` dari folder repositori lalu buka `http://localhost:8000`.
 
-Teks, gaya, dan font sudah ada di dalam HTML. Audio tilawah Mishary Alafasy memerlukan koneksi internet.
+Teks, gaya, dan font sudah ada di dalam HTML. Musik dan klip narator disertakan di `assets/audio/`. Audio tilawah Mishary Alafasy memerlukan koneksi internet.
+
+Buka menu **♫** untuk mengatur musik dan narator secara terpisah. Musik dimatikan secara default dan dijeda saat narasi, tilawah, atau tampilan Mushaf aktif. Narator aktif secara default dan memberi komentar berbahasa Indonesia setelah jawaban diperiksa.
 
 ## Hosting di Vercel
 
@@ -30,3 +32,5 @@ Saat menghubungkan [Supabase](https://supabase.com/), gunakan Auth dan kebijakan
 - Teks Juz 30 edisi `quran-uthmani` dari [Al Quran Cloud](https://api.alquran.cloud/v1/juz/30/quran-uthmani).
 - Audio Mishary Alafasy dari [Islamic Network](https://islamic.network/).
 - Lisensi font yang disertakan dapat ditemukan di bagian akhir `index.html`.
+
+- Musik latar berupa komposisi instrumental orisinal. Klip narasi dibuat dengan model [Piper Bahasa Indonesia](https://huggingface.co/rhasspy/piper-voices/tree/main/id/id_ID/news_tts/medium).

@@ -261,6 +261,54 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
 </style>
+  <style>
+    .audio-menu { position: relative; }
+    .audio-menu summary {
+      list-style: none;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      min-width: 38px;
+      min-height: 38px;
+      border: 1px solid #dce9df;
+      border-radius: 50%;
+      background: #fff;
+      color: #17483c;
+    }
+    .audio-menu summary::-webkit-details-marker { display: none; }
+    .audio-menu summary:focus-visible { outline: 3px solid #b88729; outline-offset: 3px; }
+    .audio-menu-panel {
+      position: absolute;
+      top: calc(100% + .65rem);
+      right: -2rem;
+      width: 12.75rem;
+      padding: .45rem;
+      background: #fff;
+      border: 1px solid #dce9df;
+      border-radius: .95rem;
+      box-shadow: 0 8px 24px #103f3424;
+    }
+    .audio-menu-panel button {
+      width: 100%;
+      min-height: 42px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: .5rem;
+      padding: .4rem .55rem;
+      border-radius: .55rem;
+      font-size: .76rem;
+      font-weight: 700;
+      color: #17483c;
+    }
+    .audio-menu-panel button:hover { background: #edf5ef; }
+    .audio-menu-panel button::after {
+      content: "Mati";
+      color: #4e6156;
+      font-size: .68rem;
+    }
+    .audio-menu-panel button[aria-pressed="true"]::after { content: "Aktif"; color: #08734e; }
+  </style>
 </head>
 <body class="pb-24">
 
@@ -284,6 +332,15 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
       <!-- Status Dataset & XP -->
       <div class="flex items-center gap-2">
+        <details class="audio-menu">
+          <summary aria-label="Pengaturan audio" title="Pengaturan audio">
+            <span aria-hidden="true">♫</span>
+          </summary>
+          <div class="audio-menu-panel">
+            <button id="toggle-music" type="button" aria-pressed="false" onclick="gameAudio.toggle('music')">Musik latar</button>
+            <button id="toggle-narrator" type="button" aria-pressed="true" onclick="gameAudio.toggle('narrator')">Narator</button>
+          </div>
+        </details>
         <button onclick="openProfileModal()" aria-label="Edit profil santri" class="flex items-center gap-1.5 bg-[#DDF5E7] hover:bg-[#B7D7C0]/70 border border-[#B7D7C0] px-3 py-1.5 rounded-full text-[11px] font-bold text-[#064E3B] cursor-pointer">
           <span>👤</span>
           <span id="header-santri-name" class="hidden sm:inline">Santri Tahfiz</span>
@@ -737,6 +794,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     </div>
   </nav>
 
+  <script src="assets/game-audio.js"></script>
   <script>
     /* =========================================================================
        01. METADATA 37 LEVEL JUZ 30 (AN-NAS -> AN-NABA, TOTAL 564 AYAT)
@@ -850,12 +908,11 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     let puzzleLocked = false;
     let startedAtBeginning = true;
     const recitation = new Audio();
-    recitation.addEventListener("ended", () => {
-      document.getElementById("btn-audio").setAttribute("aria-pressed", "false");
-    });
+    recitation.addEventListener("ended", stopRecitation);
 
     function stopRecitation() {
       recitation.pause();
+      gameAudio.setTilawah(false);
       document.getElementById("btn-audio").setAttribute("aria-pressed", "false");
     }
 
@@ -1055,6 +1112,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     }
 
     function switchMainTab(tab, btn) {
+      gameAudio.changeView(tab);
       stopRecitation();
       window.scrollTo(0, 0);
       document.querySelectorAll(".bottom-nav").forEach(item => item.removeAttribute("aria-current"));
@@ -1142,6 +1200,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
     }
 
     function setupPuzzleStage() {
+      gameAudio.stopNarration();
       stopRecitation();
       puzzleLocked = false;
       const competitive = ["ujian_akhir", "duel_1v1"].includes(currentMode);
@@ -1418,11 +1477,15 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
       }
       recitation.src = `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${verse.audioNumber}.mp3`;
       const button = document.getElementById("btn-audio");
+      gameAudio.setTilawah(true);
       try {
         await recitation.play();
         button.setAttribute("aria-pressed", "true");
       } catch (error) {
-        if (error.name !== "AbortError") showBanner("Audio tilawah gagal dimuat. Periksa koneksi internet.");
+        if (error.name !== "AbortError") {
+          stopRecitation();
+          showBanner("Audio tilawah gagal dimuat. Periksa koneksi internet.");
+        }
       }
     }
 
@@ -1438,6 +1501,7 @@ nav { padding-bottom: max(.55rem, env(safe-area-inset-bottom)) !important; }
 
       const isCorrect = placedSequence.every((item, idx) => item.text === expectedSequence[idx].text);
       const isDuel = currentMode === "duel_1v1";
+      gameAudio.narrate(isCorrect ? "correct" : isDuel ? "duelMiss" : "retry");
       const submittedVerseIdx = ["sambung_ayat", "duel_1v1"].includes(currentMode) ? currentVerseIdx + 1 : currentVerseIdx;
       if (isDuel) {
         if (isCorrect) {
